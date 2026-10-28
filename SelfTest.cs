@@ -159,7 +159,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         catch (Exception e) { testLog.WriteLine("ウィンドウ撮影失敗 " + name + ": " + e.Message); }
     }
 
-    async Task MouseClick(CoreWebView2 core, int x, int y)
+    async Task ClickAt(CoreWebView2 core, int x, int y)
     {
         async Task M(string type) => await core.CallDevToolsProtocolMethodAsync("Input.dispatchMouseEvent",
             $"{{\"type\":\"{type}\",\"x\":{x},\"y\":{y},\"button\":\"left\",\"clickCount\":1}}");
@@ -332,7 +332,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         RunCommand("tools.picker");
         await Sleep(700);
         var rect = JsonDocument.Parse(await JS(at, "JSON.stringify(document.getElementById('promo').getBoundingClientRect())")).RootElement;
-        await MouseClick(at.Core, (int)(rect.Num("x") + rect.Num("width") / 2), (int)(rect.Num("y") + rect.Num("height") / 2));
+        await ClickAt(at.Core, (int)(rect.Num("x") + rect.Num("width") / 2), (int)(rect.Num("y") + rect.Num("height") / 2));
         await Sleep(1000);
         Sites.Hidden.TryGetValue("127.0.0.1", out var rules);
         Check("要素ブロッカーでセレクタが保存される", rules != null && rules.Count == 1 && rules[0].Contains("promo"), rules == null ? "なし" : string.Join(",", rules));

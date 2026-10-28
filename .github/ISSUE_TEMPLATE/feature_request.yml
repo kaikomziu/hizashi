@@ -1,0 +1,17 @@
+name: 機能の要望
+description: こんな機能がほしい、というアイデアに
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: ほしい機能
+      description: どんな場面で、何が困っているかも教えてもらえると助かります。
+    validations:
+      required: true
+  - type: textarea
+    id: alt
+    attributes:
+      label: いまの代わりのやり方（あれば）
+    validations:
+      required: false

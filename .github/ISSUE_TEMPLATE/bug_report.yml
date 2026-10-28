@@ -1,0 +1,41 @@
+name: バグ報告
+description: 動作がおかしい・うまく動かないときに
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が起きましたか？
+      description: 期待した動作と、実際の動作を教えてください。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Hizashi のバージョン
+      description: メニュー（︙）→「Hizashi について」で確認できます。
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows のバージョン
+      placeholder: Windows 11 23H2 など
+    validations:
+      required: false
+  - type: textarea
+    id: log
+    attributes:
+      label: エラーログ（あれば）
+      description: "`%LOCALAPPDATA%\\Hizashi\\error.log` の内容。個人情報が含まれていないか確認してから貼ってください。"
+    validations:
+      required: false

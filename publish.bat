@@ -10,5 +10,5 @@ del /q dist\*.xml 2>nul
 echo.
 echo Done: dist\Hizashi.exe  (double-click to run)
 echo.
-echo Smaller build (about 3 MB, needs the .NET 9 Desktop Runtime):
+echo Smaller build (about 2 MB, needs the .NET 9 Desktop Runtime):
 echo   dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist\lite

@@ -240,10 +240,30 @@ public partial class MainForm
     void OnAccelerator(object sender, CoreWebView2AcceleratorKeyPressedEventArgs e)
     {
         if (e.KeyEventKind != CoreWebView2KeyEventKind.KeyDown && e.KeyEventKind != CoreWebView2KeyEventKind.SystemKeyDown) return;
+        if (SelfTest) keyEventsSeen++;
         var handled = TryShortcut((Keys)e.VirtualKey, Control.ModifierKeys);
         if (handled) e.Handled = true;
         if (SelfTest && (Control.ModifierKeys & (Keys.Control | Keys.Alt)) != 0)
             testLog?.WriteLine($"  [accel] {(Keys)e.VirtualKey} mods={Control.ModifierKeys} handled={handled} from={(sender == chrome?.Ctl() ? "chrome" : sender == overlayView?.Ctl() ? "overlay" : "tab" + tabs.FirstOrDefault(t => t.View?.Ctl() == sender)?.Id)} active={activeId}");
+    }
+
+    // フォーカスが WebView2 の「入れ物のコントロール」にあり、内側のブラウザ画面に移りきっていないとき、
+    // AcceleratorKeyPressed が発火せずキーを取りこぼすことがある。その場合でもウィンドウ側で受け取って処理する。
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (SelfTest) keyEventsSeen++;
+        if (TryShortcut(keyData & Keys.KeyCode, keyData & Keys.Modifiers)) return true;
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    // テスト用: アプリがキー入力を受け取った回数（OSからの実キー入力が届いたかの判定に使う）
+    internal int keyEventsSeen;
+
+    // テスト用: ProcessCmdKey を直接呼ぶ
+    internal bool TestCmdKey(Keys keyData)
+    {
+        var msg = new Message();
+        return ProcessCmdKey(ref msg, keyData);
     }
 
     // 割り当てがあるか（実行はしない）

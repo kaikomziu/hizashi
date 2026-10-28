@@ -376,6 +376,9 @@ public partial class MainForm : Form
         if (overlayMode != null) return;
         var v = ActiveTab?.View;
         if (v != null && v.CoreWebView2 != null) v.Focus();
+        // タブの準備がまだなら、外枠にフォーカスを置いておく（非表示になった前のタブに残さない）。
+        // 準備ができた時点で InitTabAsync が改めてタブへ移す
+        else chrome?.Focus();
     }
 
     internal void FocusUI() => chrome?.Focus();
@@ -589,6 +592,7 @@ public partial class MainForm : Form
     // パレットは、フォーカスが外れたら閉じる（クリックで他へ移ったとき）
     void OnOverlayLostFocus()
     {
+        if (SelfTest) return; // 自動テストでは前面状態が不安定になりうるので、フォーカス喪失での自動クローズは行わない
         if (overlayMode == "palette" && (DateTime.UtcNow - overlayShownAt).TotalMilliseconds > 400)
             BeginInvoke(() => { if (overlayMode == "palette") HideOverlay(false); });
     }

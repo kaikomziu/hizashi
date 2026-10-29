@@ -1,144 +1,181 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hizashi（日差し）— 日本語ネイティブの多機能ブラウザ</title>
-  <meta name="description" content="Chromium で動く、Windows 用の多機能ブラウザ。コマンドパレット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード。exe を1つダブルクリックするだけで起動します。">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Hizashi（日差し）— 日本語ネイティブの多機能ブラウザ">
-  <meta property="og:description" content="コマンドパレット・ワークスペース・縦タブ・分割表示・集中モード・リーダーモード。exe 1つで起動（Windows）。">
-  <meta property="og:url" content="https://kaikomziu.github.io/hizashi/">
-  <meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="logo.png">
-  <style>
-    :root { --bg:#10211a; --bg2:#183126; --card:#1d3a2c; --fg:#eef3ea; --dim:#b3c6b0; --accent:#9fd48b; --gold:#f3d27a; }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin:0; background:var(--bg); color:var(--fg); line-height:1.8;
-      font-family:"Segoe UI","Yu Gothic UI","Hiragino Sans",system-ui,sans-serif; }
-    a { color:var(--accent); }
-    .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
-    header { background:radial-gradient(900px 420px at 80% -10%, rgba(243,210,122,.28), transparent 70%),
-             linear-gradient(160deg,#0e1f18,#1d4030); padding:72px 0 64px; }
-    .hero { display:grid; grid-template-columns:1.05fr 1fr; gap:48px; align-items:center; }
-    .brand { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
-    .brand img { width:56px; height:56px; border-radius:14px; }
-    .brand b { font-size:34px; letter-spacing:.5px; }
-    h1 { font-size:clamp(28px,4vw,42px); line-height:1.35; margin:0 0 16px; font-weight:700; }
-    .lead { color:var(--dim); font-size:17px; margin:0 0 28px; }
-    .btns { display:flex; flex-wrap:wrap; gap:12px; }
-    .btn { display:inline-block; padding:13px 24px; border-radius:12px; font-weight:700; text-decoration:none; font-size:16px; }
-    .btn.primary { background:var(--accent); color:#16280f; }
-    .btn.primary:hover { filter:brightness(1.08); }
-    .btn.ghost { border:1px solid rgba(255,255,255,.28); color:var(--fg); }
-    .btn.ghost:hover { background:rgba(255,255,255,.08); }
-    .note { color:var(--dim); font-size:13px; margin-top:14px; }
-    .shot { border-radius:14px; box-shadow:0 24px 60px rgba(0,0,0,.5); width:100%; display:block; }
-    section { padding:64px 0 8px; }
-    h2 { font-size:28px; margin:0 0 8px; }
-    .sub { color:var(--dim); margin:0 0 32px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
-    .card { background:var(--card); border-radius:14px; padding:20px 22px; }
-    .card h3 { margin:0 0 6px; font-size:17px; color:var(--gold); }
-    .card p { margin:0; color:var(--dim); font-size:14.5px; line-height:1.75; }
-    .gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; }
-    .gallery figure { margin:0; }
-    .gallery img { width:100%; border-radius:12px; display:block; box-shadow:0 12px 32px rgba(0,0,0,.4); }
-    .gallery figcaption { color:var(--dim); font-size:14px; margin-top:10px; text-align:center; }
-    .steps { counter-reset:s; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; padding:0; list-style:none; }
-    .steps li { background:var(--bg2); border-radius:14px; padding:20px 22px 20px 64px; position:relative; }
-    .steps li::before { counter-increment:s; content:counter(s); position:absolute; left:20px; top:18px; width:30px; height:30px;
-      border-radius:50%; background:var(--accent); color:#16280f; font-weight:800; display:grid; place-items:center; }
-    details { background:var(--bg2); border-radius:12px; padding:14px 20px; margin-bottom:10px; }
-    summary { cursor:pointer; font-weight:600; }
-    details p { color:var(--dim); margin:10px 0 2px; font-size:15px; }
-    kbd { background:#0c1913; border:1px solid #3b5a48; border-bottom-width:2px; border-radius:6px; padding:1px 7px; font-size:12.5px; }
-    footer { margin-top:72px; padding:32px 0 48px; border-top:1px solid rgba(255,255,255,.1); color:var(--dim); font-size:14px; text-align:center; }
-    @media (max-width: 820px) { .hero { grid-template-columns:1fr; } header { padding:48px 0 40px; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hizashi（日差し）— Chromium で動く、日本語ネイティブの多機能ブラウザ</title>
+<meta name="description" content="Hizashi（日差し）は、Windows 用の無料・オープンソースのブラウザ。コマンドパレット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード。exe を1つダブルクリックするだけで起動します。">
+<link rel="canonical" href="https://kaikomziu.github.io/hizashi/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hizashi">
+<meta property="og:title" content="Hizashi（日差し）— Chromium で動く、日本語ネイティブの多機能ブラウザ">
+<meta property="og:description" content="Hizashi（日差し）は、Windows 用の無料・オープンソースのブラウザ。コマンドパレット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード。exe を1つダブルクリックするだけで起動します。">
+<meta property="og:url" content="https://kaikomziu.github.io/hizashi/">
+<meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10211a">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="assets/site.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hizashi","alternateName":"日差し","applicationCategory":"BrowserApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.0.1","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"downloadUrl":"https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe","url":"https://kaikomziu.github.io/hizashi/","author":{"@type":"Person","name":"kaikomziu"},"inLanguage":"ja"}
+</script>
 </head>
 <body>
-<header>
-  <div class="wrap hero">
-    <div>
-      <div class="brand"><img src="logo.png" alt=""><b>Hizashi</b></div>
-      <h1>Chromium で動く、<br>日本語ネイティブの多機能ブラウザ</h1>
-      <p class="lead">コマンドパレット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード。
-        <b>exe を1つダブルクリックするだけ</b>で起動します（Windows）。</p>
-      <div class="btns">
-        <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Hizashi.exe をダウンロード</a>
-        <a class="btn ghost" href="https://github.com/kaikomziu/hizashi">GitHub で見る</a>
-      </div>
-      <p class="note">Windows 10 / 11 ・ インストール不要 ・ 無料のオープンソース（MIT）</p>
-    </div>
-    <img class="shot" src="screenshots/split-reader.png" alt="分割表示とリーダーモード">
+<a class="skip" href="#main">本文へスキップ</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" aria-label="Hizashi トップへ"><img src="logo.png" alt="" width="36" height="36"><span>Hizashi</span></a>
+    <button class="nav-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav" aria-label="メインメニュー">
+      <a href="features.html">特長</a>
+      <a href="guide.html">使い方</a>
+      <a href="shortcuts.html">ショートカット</a>
+      <a href="faq.html">よくある質問</a>
+      <a href="changelog.html">更新履歴</a>
+      <a href="download.html" class="cta">ダウンロード</a>
+    </nav>
   </div>
 </header>
-
-<main class="wrap">
-  <section>
-    <h2>こんなふうに使えます</h2>
-    <p class="sub">画面はすべて実際の Hizashi です。</p>
-    <div class="gallery">
-      <figure><img src="screenshots/palette.png" alt="コマンドパレット" loading="lazy"><figcaption><kbd>Ctrl</kbd>+<kbd>K</kbd> のコマンドパレット。タブも履歴も機能も、ここから</figcaption></figure>
-      <figure><img src="screenshots/side-workspaces-dark.png" alt="縦タブとワークスペース" loading="lazy"><figcaption>縦タブ・ワークスペース・強制ダークモード</figcaption></figure>
-      <figure><img src="screenshots/notes.png" alt="クイックメモ" loading="lazy"><figcaption>ページを見ながら書けるクイックメモ</figcaption></figure>
-      <figure><img src="screenshots/focus.png" alt="集中モード" loading="lazy"><figcaption>集中モード。気が散るサイトをお休みさせます</figcaption></figure>
+<main id="main">
+<section class="hero">
+  <div class="wrap grid2">
+    <div>
+      <span class="eyebrow">WINDOWS 用ブラウザ ・ 無料 ・ オープンソース</span>
+      <h1>Chromium で動く、<br>日本語ネイティブの<br>多機能ブラウザ</h1>
+      <p class="lead">毎日使うブラウザに、あると助かる道具をまとめました。<br>
+        コマンドパレット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード。
+        <strong>exe を1つダブルクリックするだけ</strong>で起動します。</p>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Hizashi.exe をダウンロード</a>
+        <a class="btn ghost" href="features.html">機能を詳しく見る</a>
+      </div>
+      <p class="note" style="margin-top:14px">Windows 10 / 11（64ビット）・ インストール不要 ・ v1.0.1 ・ <a href="download.html">ダウンロードの詳細・SHA-256</a></p>
     </div>
-  </section>
+    <img class="shot" src="screenshots/split-reader.png" alt="Hizashi の画面。左は通常のページ、右はリーダーモード（分割表示）" width="1384" height="904">
+  </div>
+</section>
 
-  <section>
-    <h2>機能</h2>
-    <p class="sub">毎日使うブラウザに、あると助かる道具をまとめました。</p>
+<div class="wrap">
+  <section class="block">
+    <h2>こんなブラウザです</h2>
+    <p class="sub">表示エンジンは Microsoft Edge と同じ Chromium（WebView2）なので、たいていのサイトはそのまま表示できます。その上に、作業しやすさに寄せた機能を載せています。</p>
     <div class="grid">
-      <div class="card"><h3>コマンドパレット</h3><p>タブ・ブックマーク・履歴・全コマンドをあいまい検索。計算もできます（<code>1+2*3</code>）。</p></div>
-      <div class="card"><h3>ワークスペース</h3><p>「仕事」「趣味」など色分けしたタブのグループを <kbd>Alt</kbd>+<kbd>1〜9</kbd> で切り替え。</p></div>
-      <div class="card"><h3>縦タブ / 分割表示</h3><p>縦タブは折りたたみ可。2つのタブを左右に並べて見比べられます。</p></div>
-      <div class="card"><h3>集中モード</h3><p>時間を決めて、YouTube や X などをブロック。サイトの一覧は自由に編集できます。</p></div>
-      <div class="card"><h3>リーダーモード</h3><p>本文だけを抜き出して、文字サイズ・背景色を調整。読了時間も表示します。</p></div>
-      <div class="card"><h3>要素ブロッカー</h3><p>邪魔な要素をクリックで消去。サイトごとに記憶され、次回も消えたまま。</p></div>
-      <div class="card"><h3>広告・追跡ブロック</h3><p>広告/計測ドメインを遮断し、URL の <code>utm_*</code> や <code>fbclid</code> を自動で除去。</p></div>
-      <div class="card"><h3>HTTPS 自動化</h3><p>http のサイトを https で開き直し。開けないサイトは自動で元に戻します。</p></div>
-      <div class="card"><h3>タブの自動休止</h3><p>使っていないタブのメモリを解放。再起動しても前回のタブが戻ります。</p></div>
-      <div class="card"><h3>全ページのスクリーンショット</h3><p>縦に長いページも1枚で撮影。保存してクリップボードにもコピーします。</p></div>
-      <div class="card"><h3>検索ショートカット</h3><p>アドレスバーで <code>yt ねこ</code> <code>gh electron</code> <code>map 東京駅</code> のようにサイト内検索。</p></div>
-      <div class="card"><h3>プライバシー</h3><p>テレメトリなし・アカウント不要。データはすべてあなたのPCの中だけに保存されます。</p></div>
+      <div class="card"><h3>exe 1つで起動</h3><p>インストールも、.NET などの別途インストールも不要。ダウンロードしてダブルクリックするだけです。設定やデータは別の場所に保存されるので、exe を入れ替えるだけで更新できます。</p></div>
+      <div class="card"><h3>操作は Ctrl+K から</h3><p>タブ・ブックマーク・履歴・全 64 個のコマンドを、1つの入力欄であいまい検索。ショートカットを覚えなくても、たどり着けます。</p></div>
+      <div class="card"><h3>送信しない・見張らない</h3><p>Hizashi 自身は、利用状況を一切送信しません。アカウント登録もありません。ソースコードは公開されていて、誰でも確認できます（MIT）。</p></div>
     </div>
   </section>
 
-  <section>
+  <section class="block">
+    <h2>画面を見てみる</h2>
+    <p class="sub">画面はすべて実際の Hizashi です。</p>
+    <div class="gallery two">
+      <figure><img src="screenshots/palette.png" alt="コマンドパレット" loading="lazy" width="1384" height="904"><figcaption><kbd>Ctrl</kbd>+<kbd>K</kbd> のコマンドパレット。タブも履歴も機能も、ここから</figcaption></figure>
+      <figure><img src="screenshots/side-workspaces-dark.png" alt="縦タブとワークスペース、強制ダークモード" loading="lazy" width="1384" height="904"><figcaption>縦タブ・ワークスペース・強制ダークモード</figcaption></figure>
+      <figure><img src="screenshots/blocker-after.png" alt="要素ブロッカーで広告バナーを消したあとのページ" loading="lazy" width="1384" height="904"><figcaption>要素ブロッカー：クリックひとつで邪魔なバナーを消す</figcaption></figure>
+      <figure><img src="screenshots/focus.png" alt="集中モードの画面" loading="lazy" width="1998" height="1009"><figcaption>集中モード：気が散るサイトをお休みさせる</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>主な機能</h2>
+    <p class="sub">それぞれの使い方は<a href="features.html">特長のページ</a>と<a href="guide.html">使い方ガイド</a>で詳しく書いています。</p>
+    <div class="grid">
+      <div class="card"><h3>コマンドパレット</h3><p>タブ・ブックマーク・履歴・コマンドをまとめて検索。計算もできます。</p><a class="more" href="features.html#palette">詳しく →</a></div>
+      <div class="card"><h3>ワークスペース</h3><p>「仕事」「趣味」など、色分けしたタブのグループを <kbd>Alt</kbd>+<kbd>1〜9</kbd> で切り替え。</p><a class="more" href="features.html#workspaces">詳しく →</a></div>
+      <div class="card"><h3>縦タブ</h3><p>横タブと縦タブをワンキーで切り替え。サイドバーは折りたためます。</p><a class="more" href="features.html#vertical-tabs">詳しく →</a></div>
+      <div class="card"><h3>分割表示</h3><p>2つのタブを左右に並べて、見比べながら作業。</p><a class="more" href="features.html#split">詳しく →</a></div>
+      <div class="card"><h3>集中モード</h3><p>時間を決めて、YouTube や X などをブロック。サイトは自由に編集できます。</p><a class="more" href="features.html#focus">詳しく →</a></div>
+      <div class="card"><h3>リーダーモード</h3><p>本文だけを抜き出して表示。文字サイズ・背景色の調整、読了時間つき。</p><a class="more" href="features.html#reader">詳しく →</a></div>
+      <div class="card"><h3>要素ブロッカー</h3><p>邪魔な要素をクリックで消去。サイトごとに記憶され、次回も消えたまま。</p><a class="more" href="features.html#blocker">詳しく →</a></div>
+      <div class="card"><h3>広告・追跡のブロック</h3><p>広告・計測ドメイン（約110件）を遮断し、URL の追跡パラメータも除去。</p><a class="more" href="features.html#adblock">詳しく →</a></div>
+      <div class="card"><h3>強制ダークモード</h3><p>白いサイトを暗く。サイトごと、または全サイトで。</p><a class="more" href="features.html#dark">詳しく →</a></div>
+      <div class="card"><h3>タブの自動休止</h3><p>使っていないタブのメモリを解放。再起動しても前回のタブが戻ります。</p><a class="more" href="features.html#sleep">詳しく →</a></div>
+      <div class="card"><h3>ページ全体のスクリーンショット</h3><p>縦に長いページも1枚で撮影。保存してクリップボードにもコピー。</p><a class="more" href="features.html#screenshot">詳しく →</a></div>
+      <div class="card"><h3>クイックメモ</h3><p>ページを見ながら書けるメモ帳。選択した文字を URL つきで追加。</p><a class="more" href="features.html#notes">詳しく →</a></div>
+    </div>
+  </section>
+
+  <section class="block">
     <h2>使いはじめる</h2>
     <ol class="steps">
-      <li><b>ダウンロード</b><br>上のボタンから <code>Hizashi.exe</code> を取得します。</li>
-      <li><b>ダブルクリック</b><br>インストールは不要です。.NET も別に入れなくて大丈夫です。</li>
+      <li><b>ダウンロード</b><br>上のボタン（または<a href="download.html">ダウンロードのページ</a>）から <code>Hizashi.exe</code> を取得します。</li>
+      <li><b>ダブルクリック</b><br>インストールは不要です。初回は、画面が出るまで少し待つことがあります。</li>
       <li><b><kbd>Ctrl</kbd>+<kbd>K</kbd> を押す</b><br>コマンドパレットから、ほとんどの操作ができます。</li>
     </ol>
+    <p class="note" style="margin-top:14px">初回は Windows の SmartScreen が警告を出すことがあります。<a href="faq.html#smartscreen">対処のしかた</a>を読んでください。</p>
   </section>
 
-  <section>
-    <h2>よくある質問</h2>
-    <details><summary>「Windows によって PC が保護されました」と出ます</summary>
-      <p>署名のない個人開発のアプリのため表示されます。「詳細情報」→「実行」で起動できます。ソースコードは公開されていて、自分でビルドもできます。リリースには SHA-256 も載せています。</p></details>
-    <details><summary>Chrome の拡張機能は使えますか？</summary>
-      <p>使えません。表示エンジンは Chromium ですが、拡張機能の仕組みは載っていません。広告ブロックなど、よく使う機能は Hizashi 側に組み込んでいます。</p></details>
-    <details><summary>Google アカウントでログインできますか？</summary>
-      <p>ブラウザの名乗りを Chrome に揃えていますが、「安全でないブラウザ」と判定される場合があります。現在検証中です。うまくいかない場合は、Issue で教えてください。</p></details>
-    <details><summary>広告はすべて消えますか？</summary>
-      <p>いいえ。広告ブロックはドメイン単位で、広告配信・計測サービスへの通信を遮断します。YouTube の動画広告のように、サイト自身が配信する広告は防げません。</p></details>
-    <details><summary>データは送信されますか？</summary>
-      <p>Hizashi 自身はテレメトリを一切送りません。履歴・ブックマーク・メモ・設定はあなたのPC内に保存されます。表示エンジンの WebView2 ランタイム（Microsoft 製）の診断データは、Windows の設定に従います。</p></details>
+  <section class="block">
+    <h2>正直なところ</h2>
+    <p class="sub">向いていないこと・まだできないことも、先にお伝えします。</p>
+    <div class="grid">
+      <div class="card"><h3>拡張機能は使えません</h3><p>Chrome ウェブストアの拡張機能には対応していません。よく使う機能（広告ブロックなど）は Hizashi 側に組み込んでいます。</p></div>
+      <div class="card"><h3>画面は日本語のみ</h3><p>今のところ、画面の言葉は日本語だけです。翻訳の提案は歓迎します。</p></div>
+      <div class="card"><h3>署名のない個人開発</h3><p>コード署名がないため、初回起動時に SmartScreen の警告が出ます。ソースコードと SHA-256 で確認できます。</p></div>
+      <div class="card"><h3>メモリは Chromium 並み</h3><p>Electron 版と同じ条件で測ると、メモリ使用量はほぼ同じでした。「省メモリ」ではありません（タブの自動休止で抑えられます）。</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">ほかの制限は<a href="features.html#limits">特長のページの最後</a>と<a href="faq.html">よくある質問</a>にまとめています。</p>
   </section>
+
+  <div class="band">
+    <div>
+      <h2>Hizashi を使ってみる</h2>
+      <p>無料・オープンソース（MIT）。Windows 10 / 11 用。</p>
+    </div>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Hizashi.exe をダウンロード</a>
+      <a class="btn ghost" href="https://github.com/kaikomziu/hizashi">GitHub でソースを見る</a>
+    </div>
+  </div>
+
+  <section class="block">
+    <h2>作っている人</h2>
+    <p class="sub" style="max-width:none">Hizashi は、ウェブゲームやツールを個人で作っている「かるわか」が作っています。ほかの作品は <a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a> にまとめています。不具合の報告や要望は、<a href="https://github.com/kaikomziu/hizashi/issues">GitHub の Issues</a> へどうぞ。</p>
+  </section>
+</div>
+
 </main>
-
-<footer>
-  <div class="wrap">
-    Hizashi（日差し）— MIT License ・ © 2026 kaikomziu ・
-    <a href="https://github.com/kaikomziu/hizashi">GitHub</a> ・
-    <a href="https://github.com/kaikomziu/hizashi/issues">Issues</a> ・
-    <a href="https://github.com/kaikomziu/hizashi/blob/main/README.en.md">English</a>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand small"><img src="logo.png" alt="" width="28" height="28"><span>Hizashi（日差し）</span></div>
+      <p>Chromium で動く、日本語ネイティブの多機能ブラウザ。Windows 用・無料・オープンソース（MIT）。</p>
+    </div>
+    <div>
+      <h2>サイト</h2>
+      <ul>
+        <li><a href="features.html">特長</a></li>
+        <li><a href="guide.html">使い方ガイド</a></li>
+        <li><a href="shortcuts.html">ショートカット</a></li>
+        <li><a href="faq.html">よくある質問</a></li>
+        <li><a href="changelog.html">更新履歴</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>ダウンロード・情報</h2>
+      <ul>
+        <li><a href="download.html">ダウンロード</a></li>
+        <li><a href="privacy.html">プライバシー</a></li>
+        <li><a href="press.html">ロゴ・素材</a></li>
+        <li><a href="en/index.html">English</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>リンク</h2>
+      <ul>
+        <li><a href="https://github.com/kaikomziu/hizashi">GitHub（ソースコード）</a></li>
+        <li><a href="https://github.com/kaikomziu/hizashi/issues">不具合の報告・要望</a></li>
+        <li><a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span>© 2026 kaikomziu（かるわか）</span>
+    <span>MIT License ・ 表示エンジンは Microsoft Edge WebView2</span>
   </div>
 </footer>
+<script src="assets/site.js" defer></script>
 </body>
 </html>

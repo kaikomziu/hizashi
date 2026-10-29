@@ -1,0 +1,92 @@
+<!--meta {"title":"ダウンロード","description":"Hizashi（日差し）を公式サイトからダウンロード。Windows 10 / 11（64ビット）用、インストール不要の exe 1つ。SHA-256 の確認方法、SmartScreen の対処、更新・削除の方法も。","nav":"download"} -->
+<div class="page-hero"><div class="wrap">
+  <span class="eyebrow">DOWNLOAD</span>
+  <h1>Hizashi をダウンロード</h1>
+  <p>Windows 10 / 11（64ビット）用。無料・インストール不要。exe を1つ入手して、ダブルクリックするだけです。</p>
+</div></div>
+
+<div class="wrap doc">
+  <div class="narrow">
+    <div class="dl-box" data-latest>
+      <div>
+        <h2>Hizashi.exe</h2>
+        <dl class="kv">
+          <dt>バージョン</dt><dd data-version>v{{VERSION}}</dd>
+          <dt>公開日</dt><dd data-date>{{DATE}}</dd>
+          <dt>サイズ</dt><dd data-size>約 46 MB</dd>
+          <dt>対応 OS</dt><dd>Windows 10 / 11（64ビット）</dd>
+          <dt>ライセンス</dt><dd>MIT（無料・商用利用も可）</dd>
+        </dl>
+      </div>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Hizashi.exe をダウンロード</a>
+        <a class="btn ghost" href="https://github.com/kaikomziu/hizashi/releases/latest">リリースノートを見る</a>
+      </div>
+    </div>
+    <p class="note">ボタンを押すと、GitHub のリリースから直接ダウンロードされます（このサイトのボタンは、常に最新版を指します）。バージョン・公開日・サイズの表示は、このページを開いたときに GitHub に問い合わせて更新します（取得できないときは、上の表示のままです）。</p>
+
+    <h2 id="start">はじめかた</h2>
+    <ol class="steps">
+      <li><b>ダウンロード</b><br>ダウンロードした <code>Hizashi.exe</code> を、好きなフォルダに置きます（デスクトップなど）。</li>
+      <li><b>ダブルクリック</b><br>起動します。初回は画面が出るまで少し待つことがあります。</li>
+      <li><b>必要なら SmartScreen を通す</b><br>次の「SmartScreen の警告が出たら」を見てください。</li>
+    </ol>
+
+    <h2 id="smartscreen">SmartScreen の警告が出たら</h2>
+    <p>Hizashi は、コード署名（有料の証明書）をまだ付けていません。そのため、初回の起動で次のような画面が出ることがあります。</p>
+    <div class="callout warn"><p><strong>「Windows によってPCが保護されました」</strong>と表示され、「実行」ボタンが見えない。</p></div>
+    <ol>
+      <li>メッセージの中の<strong>「詳細情報」</strong>をクリックします。</li>
+      <li>下に出てくる<strong>「実行」</strong>ボタンをクリックします。</li>
+    </ol>
+    <p>これは「まだ多くの人に使われていないプログラム」に出る警告で、危険だと判定されたという意味ではありません。それでも不安なときは、次の方法で確かめられます。</p>
+    <ul>
+      <li>ソースコードは<a href="https://github.com/kaikomziu/hizashi">GitHub</a>で全部公開されています。</li>
+      <li>配布している exe は、GitHub Actions が公開されたソースから自動でビルドしたものです（<a href="https://github.com/kaikomziu/hizashi/actions">ビルドの記録</a>）。</li>
+      <li>下の方法で、ダウンロードしたファイルが正しいものか照合できます。</li>
+    </ul>
+    <p>それでも使いたくない場合は、無理に使う必要はありません。</p>
+
+    <h2 id="sha">ファイルが正しいか確かめる（SHA-256）</h2>
+    <p>ダウンロードしたファイルが、公開されたものと同じかどうかを、SHA-256 というハッシュ値で確かめられます。</p>
+    <ol>
+      <li>exe を置いたフォルダで、<kbd>Shift</kbd> を押しながら右クリック →「PowerShell ウィンドウをここで開く」（または「ターミナルで開く」）。</li>
+      <li>次のコマンドを実行します。
+        <pre><code>Get-FileHash .\Hizashi.exe -Algorithm SHA256</code></pre>
+      </li>
+      <li>表示された <code>Hash</code> の値が、次の値と一致していれば同じファイルです。</li>
+    </ol>
+    <div class="sha" data-sha>（最新版の値は、<a href="https://github.com/kaikomziu/hizashi/releases/latest">リリースのページ</a>にある <code>SHA256SUMS.txt</code> と、リリースノートに載っています）</div>
+    <p class="note">このページの値は、GitHub のリリースノートを読み込んで表示しています。表示されないときは、リリースのページを直接見てください。</p>
+
+    <h2 id="requirements">動作環境</h2>
+    <div class="tbl-wrap"><table>
+      <tr><th>OS</th><td>Windows 10 / 11 の64ビット版（ARM 版 Windows は動作未確認）</td></tr>
+      <tr><th>WebView2 ランタイム</th><td>必要です。Windows 11 と、更新された Windows 10 には最初から入っています。入っていなければ、起動時に案内が出ます（<a href="https://developer.microsoft.com/microsoft-edge/webview2/">Microsoft の配布ページ</a>から入手できます）。</td></tr>
+      <tr><th>.NET</th><td>不要です（exe に含まれています）。</td></tr>
+      <tr><th>ディスク</th><td>exe が約 46 MB。ほかに、設定やブラウザのデータ（キャッシュなど）が保存されます。</td></tr>
+      <tr><th>インターネット</th><td>ブラウジングに必要です。</td></tr>
+    </table></div>
+
+    <h2 id="update">更新するには</h2>
+    <p>自動更新はありません。新しい版が出たら、この<a href="download.html">ダウンロードのページ</a>から新しい exe を入手して、古い exe に上書き（入れ替え）してください。設定・ブックマーク・履歴などは別の場所に保存されているので、そのまま引き継がれます。新しい版の内容は<a href="changelog.html">更新履歴</a>にあります。</p>
+
+    <h2 id="uninstall">削除するには</h2>
+    <p>インストールをしていないので、<code>Hizashi.exe</code> を削除するだけで終わりです。データも消したいときは、<a href="guide.html#data">使い方ガイドのデータの場所</a>にあるフォルダを削除してください。ショートカットを作っていた場合は、デスクトップとスタートメニューのショートカットも削除します。</p>
+
+    <h2 id="lite">小さい版（上級者向け）</h2>
+    <p>配布している exe は、必要なものをすべて詰めた「自己完結版」で、約 46 MB あります。<a href="https://dotnet.microsoft.com/download/dotnet/9.0">.NET 9 デスクトップ ランタイム</a>を入れているパソコンなら、ソースから約 1.9 MB の小さい版を自分でビルドすることもできます。手順はリポジトリの README にあります。</p>
+
+    <h2 id="build">ソースからビルドする</h2>
+    <p>.NET 9 SDK が入っていれば、自分でビルドできます。</p>
+    <pre><code>git clone https://github.com/kaikomziu/hizashi.git
+cd hizashi
+dotnet build -c Release</code></pre>
+    <p>詳しくは<a href="https://github.com/kaikomziu/hizashi/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>を見てください。</p>
+
+    <div class="band" style="margin-top:36px">
+      <div><h2 style="font-size:22px">困ったときは</h2><p><a href="faq.html">よくある質問</a>を見るか、GitHub で報告してください。</p></div>
+      <a class="btn primary" href="https://github.com/kaikomziu/hizashi/issues">問題を報告する</a>
+    </div>
+  </div>
+</div>

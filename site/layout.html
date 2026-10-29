@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="canonical" href="{{canonical}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hizashi">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{canonical}}">
+<meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10211a">
+<link rel="icon" href="{{root}}favicon.ico">
+<link rel="apple-touch-icon" href="{{root}}logo.png">
+<link rel="stylesheet" href="{{root}}assets/site.css">
+{{head_extra}}
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="{{root}}index.html" aria-label="Hizashi トップへ"><img src="{{root}}logo.png" alt="" width="36" height="36"><span>Hizashi</span></a>
+    <button class="nav-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav" aria-label="メインメニュー">
+{{nav}}
+    </nav>
+  </div>
+</header>
+<main id="main">
+{{content}}
+</main>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand small"><img src="{{root}}logo.png" alt="" width="28" height="28"><span>Hizashi（日差し）</span></div>
+      <p>Chromium で動く、日本語ネイティブの多機能ブラウザ。Windows 用・無料・オープンソース（MIT）。</p>
+    </div>
+    <div>
+      <h2>サイト</h2>
+      <ul>
+        <li><a href="{{root}}features.html">特長</a></li>
+        <li><a href="{{root}}guide.html">使い方ガイド</a></li>
+        <li><a href="{{root}}shortcuts.html">ショートカット</a></li>
+        <li><a href="{{root}}faq.html">よくある質問</a></li>
+        <li><a href="{{root}}changelog.html">更新履歴</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>ダウンロード・情報</h2>
+      <ul>
+        <li><a href="{{root}}download.html">ダウンロード</a></li>
+        <li><a href="{{root}}privacy.html">プライバシー</a></li>
+        <li><a href="{{root}}press.html">ロゴ・素材</a></li>
+        <li><a href="{{root}}en/index.html">English</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>リンク</h2>
+      <ul>
+        <li><a href="https://github.com/kaikomziu/hizashi">GitHub（ソースコード）</a></li>
+        <li><a href="https://github.com/kaikomziu/hizashi/issues">不具合の報告・要望</a></li>
+        <li><a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span>© {{year}} kaikomziu（かるわか）</span>
+    <span>MIT License ・ 表示エンジンは Microsoft Edge WebView2</span>
+  </div>
+</footer>
+<script src="{{root}}assets/site.js" defer></script>
+</body>
+</html>

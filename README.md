@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <a href="README.en.md">English</a> ・ <a href="https://kaikomziu.github.io/hizashi/">紹介ページ</a>
+  <a href="README.en.md">English</a> ・ <a href="https://kaikomziu.github.io/hizashi/">公式サイト</a>
 </p>
 
 ![分割表示とリーダーモード](docs/screenshots/split-reader.png)
 
 ## ダウンロード
 
-1. [**Releases**](https://github.com/kaikomziu/hizashi/releases/latest) から `Hizashi.exe` をダウンロード
+1. [**公式サイトのダウンロードページ**](https://kaikomziu.github.io/hizashi/download.html)（または [Releases](https://github.com/kaikomziu/hizashi/releases/latest)）から `Hizashi.exe` をダウンロード
 2. ダブルクリックで起動（インストール不要。.NET も別途入れる必要はありません）
 
 > **「Windows によって PC が保護されました」と出たら**: 署名のない個人開発のアプリのため表示されます。「詳細情報」→「実行」で起動できます。

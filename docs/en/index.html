@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hizashi — a free, open-source browser for Windows</title>
+<meta name="description" content="Hizashi is a free, open-source Chromium (WebView2) browser for Windows with a command palette, workspaces, vertical tabs, split view, focus mode and reader mode. One exe, no installer. The UI is Japanese only.">
+<link rel="canonical" href="https://kaikomziu.github.io/hizashi/en/index.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hizashi">
+<meta property="og:title" content="Hizashi — a free, open-source browser for Windows">
+<meta property="og:description" content="Hizashi is a free, open-source Chromium (WebView2) browser for Windows with a command palette, workspaces, vertical tabs, split view, focus mode and reader mode. One exe, no installer. The UI is Japanese only.">
+<meta property="og:url" content="https://kaikomziu.github.io/hizashi/en/index.html">
+<meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10211a">
+<link rel="icon" href="../favicon.ico">
+<link rel="apple-touch-icon" href="../logo.png">
+<link rel="stylesheet" href="../assets/site.css">
+
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="../index.html" aria-label="Hizashi トップへ"><img src="../logo.png" alt="" width="36" height="36"><span>Hizashi</span></a>
+    <button class="nav-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav" aria-label="メインメニュー">
+      <a href="../features.html">特長</a>
+      <a href="../guide.html">使い方</a>
+      <a href="../shortcuts.html">ショートカット</a>
+      <a href="../faq.html">よくある質問</a>
+      <a href="../changelog.html">更新履歴</a>
+      <a href="../download.html" class="cta">ダウンロード</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="hero">
+  <div class="wrap grid2">
+    <div>
+      <span class="eyebrow">FREE · OPEN SOURCE · WINDOWS</span>
+      <h1>Hizashi — a Chromium browser with a command palette</h1>
+      <p class="lead">A personal-project browser for Windows built on Microsoft Edge WebView2. Workspaces, vertical tabs, split view, focus mode, reader mode, an element blocker and more — in a single exe that needs no installer.</p>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Download Hizashi.exe</a>
+        <a class="btn ghost" href="https://github.com/kaikomziu/hizashi">View source on GitHub</a>
+      </div>
+      <p class="note" style="margin-top:14px">Windows 10 / 11 (64-bit) · v1.0.1 · MIT license · about 46 MB</p>
+    </div>
+    <img class="shot" src="../screenshots/split-reader.png" alt="Hizashi showing a normal page on the left and reader mode on the right in split view" width="1384" height="904">
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="block">
+    <h2>Please note: the interface is Japanese only</h2>
+    <p class="sub" style="max-width:none">Hizashi's menus, panels and settings are currently in Japanese only. Web pages are displayed normally in any language. Translations are welcome — see <a href="https://github.com/kaikomziu/hizashi/issues">GitHub Issues</a>.</p>
+  </section>
+
+  <section class="block">
+    <h2>Features</h2>
+    <div class="grid">
+      <div class="card"><h3>Command palette</h3><p><kbd>Ctrl</kbd>+<kbd>K</kbd> fuzzy-searches your tabs, bookmarks, history and all 64 commands. It also does quick maths.</p></div>
+      <div class="card"><h3>Workspaces &amp; vertical tabs</h3><p>Group tabs into colour-coded workspaces and switch with <kbd>Alt</kbd>+<kbd>1–9</kbd>. Toggle a collapsible vertical tab sidebar.</p></div>
+      <div class="card"><h3>Split view</h3><p>Show two tabs side by side with <kbd>Alt</kbd>+<kbd>S</kbd>.</p></div>
+      <div class="card"><h3>Focus mode</h3><p>Block a configurable list of distracting sites for a set time.</p></div>
+      <div class="card"><h3>Reader mode</h3><p>Extracts the article text, with font size, themes and an estimated reading time.</p></div>
+      <div class="card"><h3>Element blocker</h3><p>Click any element to hide it; Hizashi remembers it per site.</p></div>
+      <div class="card"><h3>Privacy helpers</h3><p>Blocks about 約110 ad/tracker domains, upgrades to HTTPS and strips tracking parameters (utm_*, fbclid, gclid…) from URLs.</p></div>
+      <div class="card"><h3>And more</h3><p>Per-site forced dark mode and zoom, full-page screenshots, quick notes, tab sleeping, session restore, picture-in-picture, and 17 address-bar search shortcuts.</p></div>
+    </div>
+    <p class="note" style="margin-top:14px">The detailed pages are in Japanese: <a href="../features.html">features</a>, <a href="../shortcuts.html">shortcuts</a>.</p>
+  </section>
+
+  <section class="block">
+    <h2>Honest limitations</h2>
+    <ul>
+      <li>No browser extensions (WebView2 does not support them).</li>
+      <li>No incognito window, no account sync, no import from other browsers.</li>
+      <li>Memory use is on par with other Chromium browsers — it is not lightweight. Tab sleeping helps.</li>
+      <li>Ad blocking is domain-based and simple; it is not a replacement for uBlock Origin.</li>
+      <li>Signing in with a Google account may be rejected as an "insecure browser".</li>
+      <li>The exe is not code-signed, so Windows SmartScreen may warn on first launch (click "More info" → "Run anyway"). Verify the file with the SHA-256 on the <a href="https://github.com/kaikomziu/hizashi/releases/latest">release page</a>.</li>
+      <li>No auto-update: download a new exe and replace the old one. Your data is kept separately.</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>Privacy</h2>
+    <p class="sub" style="max-width:none">Hizashi itself sends no telemetry and needs no account. Bookmarks, history and notes stay on your PC. Requires the Microsoft Edge WebView2 Runtime (included in Windows 11 and recent Windows 10). The source is MIT-licensed on <a href="https://github.com/kaikomziu/hizashi">GitHub</a>.</p>
+  </section>
+
+  <div class="band">
+    <div><h2>Try Hizashi</h2><p>Free, open source (MIT), Windows 10 / 11.</p></div>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Download Hizashi.exe</a>
+      <a class="btn ghost" href="../download.html">Download details (Japanese)</a>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand small"><img src="../logo.png" alt="" width="28" height="28"><span>Hizashi（日差し）</span></div>
+      <p>Chromium で動く、日本語ネイティブの多機能ブラウザ。Windows 用・無料・オープンソース（MIT）。</p>
+    </div>
+    <div>
+      <h2>サイト</h2>
+      <ul>
+        <li><a href="../features.html">特長</a></li>
+        <li><a href="../guide.html">使い方ガイド</a></li>
+        <li><a href="../shortcuts.html">ショートカット</a></li>
+        <li><a href="../faq.html">よくある質問</a></li>
+        <li><a href="../changelog.html">更新履歴</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>ダウンロード・情報</h2>
+      <ul>
+        <li><a href="../download.html">ダウンロード</a></li>
+        <li><a href="../privacy.html">プライバシー</a></li>
+        <li><a href="../press.html">ロゴ・素材</a></li>
+        <li><a href="../en/index.html">English</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>リンク</h2>
+      <ul>
+        <li><a href="https://github.com/kaikomziu/hizashi">GitHub（ソースコード）</a></li>
+        <li><a href="https://github.com/kaikomziu/hizashi/issues">不具合の報告・要望</a></li>
+        <li><a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span>© 2026 kaikomziu（かるわか）</span>
+    <span>MIT License ・ 表示エンジンは Microsoft Edge WebView2</span>
+  </div>
+</footer>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

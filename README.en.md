@@ -15,7 +15,7 @@
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078d4">
 </p>
 
-<p align="center"><a href="README.md">日本語</a></p>
+<p align="center"><a href="README.md">日本語</a> ・ <a href="https://kaikomziu.github.io/hizashi/en/">Website</a></p>
 
 ![Split view with reader mode](docs/screenshots/split-reader.png)
 
@@ -23,7 +23,7 @@
 
 ## Download
 
-1. Get `Hizashi.exe` from [**Releases**](https://github.com/kaikomziu/hizashi/releases/latest).
+1. Get `Hizashi.exe` from the [**website**](https://kaikomziu.github.io/hizashi/en/) or [**Releases**](https://github.com/kaikomziu/hizashi/releases/latest).
 2. Double-click it. No installer, and no separate .NET install needed.
 
 > If Windows SmartScreen says *"Windows protected your PC"*: the exe is not code-signed (it's a hobby project). Click **More info → Run anyway**. The full source is here, you can build it yourself, and the release lists a SHA-256 checksum.

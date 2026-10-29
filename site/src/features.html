@@ -1,0 +1,373 @@
+<!--meta {"title":"特長・機能の詳細","description":"Hizashi の全機能の詳しい解説。コマンドパレット、アドレスバーの検索ショートカット、ワークスペース、縦タブ、分割表示、集中モード、リーダーモード、要素ブロッカー、広告ブロック、スクリーンショットなど。","nav":"features"} -->
+<div class="page-hero"><div class="wrap">
+  <span class="eyebrow">FEATURES</span>
+  <h1>特長・機能の詳細</h1>
+  <p>Hizashi の機能を、使い方・ショートカット・できないことまで含めて詳しく説明します。全コマンドとショートカットの一覧は<a href="shortcuts.html">ショートカットのページ</a>にあります。</p>
+</div></div>
+
+<div class="wrap doc">
+  <nav class="toc" aria-label="このページの目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#palette">コマンドパレット</a></li>
+      <li><a href="#address">アドレスバーと検索ショートカット</a></li>
+      <li><a href="#workspaces">ワークスペース</a></li>
+      <li><a href="#vertical-tabs">縦タブ</a></li>
+      <li><a href="#split">分割表示</a></li>
+      <li><a href="#focus">集中モード</a></li>
+      <li><a href="#reader">リーダーモード</a></li>
+      <li><a href="#blocker">要素ブロッカー</a></li>
+      <li><a href="#adblock">広告・トラッカーのブロック</a></li>
+      <li><a href="#https">HTTPS 自動アップグレードと追跡パラメータの除去</a></li>
+      <li><a href="#dark">強制ダークモード</a></li>
+      <li><a href="#sleep">タブの自動休止とセッションの復元</a></li>
+      <li><a href="#zoom">サイトごとのズーム</a></li>
+      <li><a href="#screenshot">スクリーンショット</a></li>
+      <li><a href="#notes">クイックメモ</a></li>
+      <li><a href="#find">ページ内検索</a></li>
+      <li><a href="#tabs">タブの操作</a></li>
+      <li><a href="#bookmarks-history">ブックマーク・履歴・ダウンロード</a></li>
+      <li><a href="#newtab">新しいタブページ</a></li>
+      <li><a href="#others">そのほかの機能</a></li>
+      <li><a href="#permissions">権限の確認</a></li>
+      <li><a href="#settings">設定</a></li>
+      <li><a href="#limits">できないこと・制限</a></li>
+    </ol>
+  </nav>
+
+  <div class="feature" id="palette">
+    <div class="text">
+      <span class="badge">Ctrl + K</span>
+      <h2>コマンドパレット</h2>
+      <p>Hizashi の中心になる機能です。開いているタブ、ブックマーク、履歴、そして<strong>すべてのコマンド（{{CMD_TOTAL}} 個）</strong>を、1つの入力欄からあいまい検索できます。ショートカットを覚えていなくても、「分割」「ダーク」「スクショ」のように打てば見つかります。</p>
+      <ul>
+        <li>空白で区切ると、すべての単語を含むものだけが残ります。</li>
+        <li>先頭の記号で対象を絞れます：<code>&gt;</code> コマンドだけ / <code>@</code> タブだけ / <code>*</code> ブックマークだけ / <code>?</code> 履歴だけ。</li>
+        <li><strong>計算</strong>もできます。<code>1+2*3</code> と打つと結果が出て、<kbd>Enter</kbd> でコピー。使えるのは <code>+ - * / % ^</code> と括弧です。</li>
+        <li>URL や言葉を打つと、いちばん下に「開く／検索する」の候補が出ます。<kbd>Ctrl</kbd>+<kbd>Enter</kbd> で新しいタブに開きます。</li>
+        <li><kbd>Esc</kbd> か、ほかの場所をクリックすると閉じます。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/palette.png" alt="コマンドパレットに「分割」と入力した画面" loading="lazy" width="1384" height="904"><figcaption>「分割」と打つと、分割表示のコマンドが見つかる</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="address">
+    <div class="text">
+      <h2>アドレスバーと検索ショートカット</h2>
+      <p>アドレスバーに文字を打つと、候補が最大7件まで出ます。1番目は「入力をそのまま開く／検索する」、続いて開いているタブ、ブックマーク、履歴の順です。<kbd>↑</kbd><kbd>↓</kbd> で選んで <kbd>Enter</kbd>。</p>
+      <p>先頭に<strong>キーワード</strong>を付けると、そのサイトの中を直接検索します。たとえば <code>yt ねこ</code> は YouTube で「ねこ」を検索、<code>gh electron</code> は GitHub で検索です。<code>!yt ねこ</code> のように <code>!</code> を付けても使えます。（新しいタブページの検索欄でも同じです。）</p>
+      <p>キーワードに当てはまらない言葉は、設定した検索エンジンで検索します。選べるのは Google・DuckDuckGo・Bing・Yahoo! JAPAN・Brave Search です（<a href="#settings">設定</a>）。</p>
+    </div>
+    <div>
+      <p class="note" style="margin-top:0">検索ショートカット（{{BANG_COUNT}}個）</p>
+      {{BANGS}}
+    </div>
+  </div>
+
+  <div class="feature" id="workspaces">
+    <div class="text">
+      <span class="badge">Alt + 1〜9</span>
+      <h2>ワークスペース</h2>
+      <p>タブを用途ごとのグループに分けて、切り替えられます。「仕事」「勉強」「趣味」のように分けておけば、いま必要なタブだけが目に入ります。</p>
+      <ul>
+        <li>タブの左にある丸いボタンがワークスペースです。クリックで切り替え、<strong>＋</strong> で追加します（名前は12文字まで）。</li>
+        <li>丸いボタンを右クリックすると、名前の変更と削除ができます。削除したワークスペースのタブは、別のワークスペースに移ります。</li>
+        <li>タブを右クリック →「ワークスペースへ移動」で、タブを別のグループに移せます。</li>
+        <li>ワークスペースごとに色が付き、アクティブなタブの下線に反映されます。</li>
+        <li>最初から「メイン」が1つあります。最後の1つは削除できません。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/side-workspaces-dark.png" alt="3つのワークスペース（メイン・趣味・勉強）が並ぶ縦タブの画面" loading="lazy" width="1384" height="904"><figcaption>左上の丸いボタンがワークスペース（メイン・趣味・勉強）</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="vertical-tabs">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + L</span>
+      <h2>縦タブ</h2>
+      <p>タブを画面の左に縦に並べます。タブの名前が長くても読みやすく、たくさん開いても迷いません。</p>
+      <ul>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>（または<a href="#settings">設定</a>の「タブの位置」）で、横タブと縦タブを切り替えます。</li>
+        <li>ツールバー左端のボタンで、サイドバーを<strong>折りたため</strong>ます（アイコンだけになります）。</li>
+        <li>タブはドラッグで並べ替えられます。中クリックで閉じます。</li>
+        <li>サイドバーの下に「新しいタブ」と「パレット」のボタンがあります。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/side-collapsed.png" alt="サイドバーを折りたたんだ縦タブの画面" loading="lazy" width="1384" height="904"><figcaption>サイドバーを折りたたむと、アイコンだけになる</figcaption></figure>
+  </div>
+
+  <div class="feature" id="split">
+    <div class="text">
+      <span class="badge">Alt + S</span>
+      <h2>分割表示</h2>
+      <p>2つのタブを左右に並べます。資料を見ながら書く、2つのページを見比べる、といった使い方に向いています。</p>
+      <ul>
+        <li><kbd>Alt</kbd>+<kbd>S</kbd> で開始、もう一度で終了します。相手になるのは、同じワークスペースで<strong>直前に使っていたタブ</strong>です（無ければ新しいタブ）。</li>
+        <li>リンクを右クリック →「リンクを横に並べて開く」で、そのリンクを右側に開きます。</li>
+        <li>タブを右クリック →「このタブと横に並べる」でも指定できます。</li>
+        <li>操作できるのは、最後にクリックした側です。分割中のタブには、金色の目印が付きます。</li>
+        <li>幅は左右が半分ずつで、変更はできません。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/split-reader.png" alt="左に通常のページ、右にリーダーモードを並べた分割表示" loading="lazy" width="1384" height="904"><figcaption>左は通常のページ、右はリーダーモード</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="focus">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + F</span>
+      <h2>集中モード</h2>
+      <p>時間を決めて、気が散るサイトを開けなくします。「YouTube を開いたら2時間たっていた」を防ぐための機能です。</p>
+      <ul>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> で時間（1〜480分）を入力して開始。パレットや新しいタブページから、25分・50分でも始められます。</li>
+        <li>期間中、対象のサイトへ移動しようとすると、残り時間つきの専用画面に置き換わります。サブドメイン（<code>www.</code> など）も対象です。</li>
+        <li>ツールバーに残り時間が出ます。クリックすると終了できます。専用画面の「集中モードを終了して開く」ボタンでも解除できます。</li>
+        <li>終わるとお知らせの音とメッセージが出ます。</li>
+        <li>対象のサイトは<a href="#settings">設定</a>で自由に編集できます。初期値は youtube.com / x.com / twitter.com / reddit.com / twitch.tv / nicovideo.jp / tiktok.com / instagram.com / facebook.com です。</li>
+      </ul>
+      <div class="callout"><p><strong>ロックではありません。</strong>自分の意思を助けるための仕組みなので、解除はいつでもできます。すでに開いているタブは、そのサイト内で別のページへ移動するまで影響を受けません。</p></div>
+    </div>
+    <figure><img src="screenshots/focus.png" alt="集中モードの専用画面。残り時間が表示されている" loading="lazy" width="1998" height="1009"><figcaption>ブロック対象のサイトを開こうとしたときの画面</figcaption></figure>
+  </div>
+
+  <div class="feature" id="reader">
+    <div class="text">
+      <span class="badge">F9</span>
+      <h2>リーダーモード</h2>
+      <p>記事ページから本文だけを取り出して、読みやすく表示します。広告やメニュー、関連記事などが消えて、文章に集中できます。</p>
+      <ul>
+        <li>画面上のボタンで<strong>文字サイズ</strong>（A−／A＋）と<strong>テーマ</strong>（白／セピア／黒）を変えられます。</li>
+        <li>見出しの下に、<strong>読了時間の目安</strong>が出ます（日本語は1分500字、英語は1分220語で計算）。</li>
+        <li>「元のページ」ボタンか、もう一度 <kbd>F9</kbd> で元に戻ります。</li>
+        <li>段落の少ないページなど、本文を見つけられないときは「本文を検出できませんでした」と出ます。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/reader.png" alt="リーダーモードで表示した記事ページ" loading="lazy" width="1384" height="904"><figcaption>記事の本文だけを表示（読了時間つき）</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="blocker">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + X</span>
+      <h2>要素ブロッカー</h2>
+      <p>ページの中の邪魔な部分を、クリックで消せます。消した内容は<strong>サイトごとに記憶</strong>されて、次に開いたときも消えたままです。</p>
+      <ol>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> を押すと、マウスの下の要素が赤く縁取られます。</li>
+        <li>消したい要素をクリック。（やめるときは <kbd>Esc</kbd>。）</li>
+        <li>その要素が消えます。同じサイトの別のページでも、同じ要素なら消えます。</li>
+      </ol>
+      <p>元に戻したいときは、シールドのボタンのメニュー、またはパレットの「このサイトの非表示要素をすべて元に戻す」を使います。</p>
+      <div class="callout"><p><strong>うまく消えなくなることがあります。</strong>サイトの作りが変わると、記憶した場所が合わなくなります。そのときは、もう一度消し直してください。</p></div>
+    </div>
+    <div>
+      <figure><img src="screenshots/blocker-before.png" alt="要素ブロッカーを使う前。文章の間に広告バナーがある" loading="lazy" width="1384" height="904"><figcaption>消す前：文章の間に広告バナー</figcaption></figure>
+      <figure style="margin-top:16px"><img src="screenshots/blocker-after.png" alt="要素ブロッカーでバナーを消したあと" loading="lazy" width="1384" height="904"><figcaption>消したあと：バナーがなくなり、文章がつながる</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="feature" id="adblock">
+    <div class="text">
+      <h2>広告・トラッカーのブロック</h2>
+      <p>広告の配信や、アクセスの計測を行う<strong>{{BLOCK_COUNT}}件のドメイン</strong>への通信を、ページを読み込む途中で止めます。広告が出ない分、ページも軽くなります。</p>
+      <ul>
+        <li>ブロックした数が、ツールバーのシールドのボタンに表示されます。</li>
+        <li>シールドのボタンのメニューで、<strong>このサイトだけ</strong>ブロックをオフにできます（例：広告をブロックすると表示できないサイト）。</li>
+        <li>全サイトのオン／オフは<a href="#settings">設定</a>から。</li>
+      </ul>
+      <div class="callout warn"><p><strong>すべての広告が消えるわけではありません。</strong>ブロックは「広告会社のドメインへの通信」を止める方式です。YouTube の動画広告のように、サイト自身が配信する広告は止められません。一覧は固定で、自動では更新されません。</p></div>
+    </div>
+    <div class="card"><h3>ブロックの対象（一部）</h3><p>Google の広告・計測、Amazon の広告、Criteo・Taboola・Outbrain などの大手広告ネットワーク、ヒートマップ・解析ツール、国内の広告ネットワークなど。完全な一覧は<a href="https://github.com/kaikomziu/hizashi/blob/main/Blocklist.cs">ソースコード（Blocklist.cs）</a>で見られます。</p></div>
+  </div>
+
+  <div class="feature rev" id="https">
+    <div class="text">
+      <h2>HTTPS 自動アップグレードと追跡パラメータの除去</h2>
+      <h3>HTTPS 自動アップグレード</h3>
+      <p><code>http://</code> のページを開こうとしたとき、自動で <code>https://</code> に切り替えます。切り替えた先が開けなかったサイトは、自動で元の http に戻して再試行します。社内ネットワークやパソコン内のアドレス（<code>localhost</code>、IPアドレス、<code>.local</code> など）は対象外です。</p>
+      <h3>追跡パラメータの除去</h3>
+      <p>URL の末尾に付く <code>utm_source</code>・<code>fbclid</code>・<code>gclid</code> などの<strong>追跡用の情報</strong>を、ページを開く前に自動で取り除きます。共有するときに余計な情報が付いて回りません。</p>
+      <ul>
+        <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> で、追跡情報を除いた URL をコピーします。</li>
+        <li>リンクの右クリック →「リンクのURLをコピー（追跡情報を除く）」も同様です。</li>
+      </ul>
+      <p>どちらも<a href="#settings">設定</a>でオフにできます。</p>
+    </div>
+    <div class="card"><h3>除去する主なパラメータ</h3><p><code>utm_source</code> <code>utm_medium</code> <code>utm_campaign</code> <code>utm_term</code> <code>utm_content</code> <code>fbclid</code> <code>gclid</code> <code>dclid</code> <code>msclkid</code> <code>yclid</code> <code>igshid</code> <code>twclid</code> <code>ttclid</code> <code>mc_cid</code> <code>mc_eid</code> ほか。ページの表示に必要なパラメータには触れません。</p></div>
+  </div>
+
+  <div class="feature" id="dark">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + D</span>
+      <h2>強制ダークモード</h2>
+      <p>白いサイトを、暗い配色で表示します。夜に目が疲れにくくなります。</p>
+      <ul>
+        <li>オン／オフは<strong>サイトごと</strong>に記憶されます。ツールバーの半月のボタンでも切り替えられます。</li>
+        <li>「全サイトを強制ダークモード」を設定でオンにすると、すべてのサイトが対象になります（サイトごとの設定が優先されます）。</li>
+        <li>色を反転させる方法なので、画像・動画は元の色に戻して表示します。サイトによっては、見た目が少し不自然になることがあります。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/side-workspaces-dark.png" alt="強制ダークモードで表示した記事ページ" loading="lazy" width="1384" height="904"><figcaption>強制ダークモード（サイトごとに記憶）</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="sleep">
+    <div class="text">
+      <h2>タブの自動休止とセッションの復元</h2>
+      <p>しばらく使っていないタブを<strong>休止</strong>して、メモリを解放します。休止中のタブは、タブの名前が薄く表示され、クリックするとページを読み込み直して復帰します。</p>
+      <ul>
+        <li>何分で休止するかは設定で選べます（5・10・15・30・60分、またはしない。初期値は15分）。</li>
+        <li>次のタブは休止しません：表示中のタブ、分割表示中のタブ、音が出ているタブ、読み込み中のタブ。</li>
+        <li>手動で休止もできます：タブを右クリック →「このタブを休止」、またはパレットの「他のタブをすべて休止」。</li>
+        <li><strong>前回のタブの復元</strong>：起動すると、前回開いていたタブ（ワークスペース・ピン留めも含む）が休止状態で戻ります。表示中のタブだけが読み込まれるので、起動が軽く済みます（設定でオフにもできます）。</li>
+        <li>閉じたタブは、<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> で最大25件まで開き直せます。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>メモリについて</h3><p>表示エンジンは Chromium なので、開いているタブの分だけメモリを使います。Electron 製のブラウザとほぼ同じ水準です。自動休止は、使っていないタブの分を減らすための機能です。</p></div>
+  </div>
+
+  <div class="feature" id="zoom">
+    <div class="text">
+      <span class="badge">Ctrl + ／ − ／ 0</span>
+      <h2>サイトごとのズーム</h2>
+      <p>拡大・縮小の倍率は<strong>サイトごとに記憶</strong>されます。小さい文字のサイトだけ大きくしておけば、次に開いたときも同じ大きさです。<kbd>Ctrl</kbd>+<kbd>0</kbd> で100%に戻ります。倍率は 25%〜500% です。</p>
+    </div>
+  </div>
+
+  <div class="feature rev" id="screenshot">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + S</span>
+      <h2>スクリーンショット</h2>
+      <p>2通りの撮り方があります。どちらも、画像ファイルとして保存し、同時にクリップボードにもコピーします。</p>
+      <ul>
+        <li><strong>表示範囲</strong>：いま見えている部分を撮ります（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>）。</li>
+        <li><strong>ページ全体</strong>：縦に長いページも、1枚の画像にします（パレットで「スクリーンショット（ページ全体）」）。高さは最大16,000ピクセルまでです。</li>
+      </ul>
+      <p>保存先は「ピクチャ」フォルダの中の <code>Hizashi</code> フォルダです。</p>
+    </div>
+  </div>
+
+  <div class="feature" id="notes">
+    <div class="text">
+      <span class="badge">Ctrl + Shift + N</span>
+      <h2>クイックメモ</h2>
+      <p>ページを見ながら書ける、右側のメモ帳です。複数のメモを作れて、書いた内容は自動で保存されます。</p>
+      <ul>
+        <li>ページ上の文字を選択 → 右クリック →「<strong>選択範囲をメモに追加</strong>」で、ページのタイトルと URL つきの新しいメモになります。</li>
+        <li>「現在のURLを挿入」ボタンで、いま見ているページのタイトルと URL をカーソル位置に入れます。</li>
+        <li>メモの1行目が、一覧の名前になります。</li>
+      </ul>
+      <p class="note">メモはあなたのパソコンの中だけに保存されます（<a href="privacy.html">プライバシー</a>）。</p>
+    </div>
+    <figure><img src="screenshots/notes.png" alt="右側にクイックメモのパネルを開いた画面" loading="lazy" width="1384" height="904"><figcaption>ページを見ながら書けるメモ</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="find">
+    <div class="text">
+      <span class="badge">Ctrl + F</span>
+      <h2>ページ内検索</h2>
+      <p>ページの中から言葉を探します。見つかった箇所をすべて色付けして、「1 / 3」のように件数と今の位置を表示します。<kbd>Enter</kbd> で次へ、<kbd>Shift</kbd>+<kbd>Enter</kbd> で前へ。<kbd>Esc</kbd> で閉じます。</p>
+    </div>
+    <figure><img src="screenshots/find.png" alt="ページ内検索で「タブ」を探した画面。1 / 3 と表示されている" loading="lazy" width="1384" height="904"><figcaption>見つかった箇所が色付けされ、件数が出る</figcaption></figure>
+  </div>
+
+  <div class="feature" id="tabs">
+    <div class="text">
+      <h2>タブの操作</h2>
+      <ul>
+        <li><strong>ピン留め</strong>：タブを右クリック →「ピン留め」。ピン留めしたタブは左端に寄り、横タブではアイコンだけの小さな表示になります。</li>
+        <li><strong>ミュート</strong>：音が出ているタブにスピーカーのアイコンが付きます。クリックでミュート、<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> でも切り替えます。</li>
+        <li><strong>並べ替え</strong>：ドラッグ。<strong>閉じる</strong>：×ボタン、中クリック、<kbd>Ctrl</kbd>+<kbd>W</kbd>。</li>
+        <li><strong>複製</strong>・<strong>他のタブを閉じる</strong>：タブの右クリックメニューから。</li>
+        <li><strong>切り替え</strong>：<kbd>Ctrl</kbd>+<kbd>Tab</kbd>（逆は <kbd>Shift</kbd> も）、<kbd>Ctrl</kbd>+<kbd>1〜9</kbd>（9は最後のタブ）。</li>
+        <li>リンクの <code>target="_blank"</code> や <code>window.open</code> は新しいタブで開きます。ログイン用のポップアップも、タブとして開いて元のページに結果を返せます。</li>
+        <li>ウィンドウは1つだけです。2つ目の Hizashi を起動すると、すでに開いているウィンドウが前面に出ます（URL を渡した場合はそのタブが開きます）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature rev" id="bookmarks-history">
+    <div class="text">
+      <h2>ブックマーク・履歴・ダウンロード</h2>
+      <h3>ブックマーク</h3>
+      <p>☆ボタンか <kbd>Ctrl</kbd>+<kbd>D</kbd> で追加・解除。ツールバーの下の<strong>ブックマークバー</strong>に並びます（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> で表示を切り替え）。バーの項目を右クリックすると、新しいタブで開く・横に並べて開く・削除ができます。一覧は <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> のパネルで検索できます。フォルダ分けはできません。</p>
+      <h3>履歴</h3>
+      <p><kbd>Ctrl</kbd>+<kbd>H</kbd> のパネルで、日ごとにまとまった履歴を検索・削除できます（最大5,000件）。「すべて削除」もあります。</p>
+      <h3>ダウンロード</h3>
+      <p><kbd>Ctrl</kbd>+<kbd>J</kbd> のパネルで、進み具合の確認・キャンセル・「開く」・「フォルダで表示」ができます。保存先は「ダウンロード」フォルダで、同じ名前のファイルがあれば <code>(1)</code> を付けて保存します。保存先を毎回選ぶ画面は出ません。</p>
+    </div>
+    <figure><img src="screenshots/history.png" alt="右側に履歴のパネルを開いた画面" loading="lazy" width="1384" height="904"><figcaption>履歴は日ごとにまとまり、検索・削除ができる</figcaption></figure>
+  </div>
+
+  <div class="feature" id="newtab">
+    <div class="text">
+      <h2>新しいタブページ</h2>
+      <p>時間帯で色が変わる背景と、時計・あいさつ、検索欄（検索ショートカットも使えます）を表示します。</p>
+      <ul>
+        <li>ブックマークの先頭12件が、ショートカットとして並びます。</li>
+        <li><strong>TODO</strong>：やることを書き留めて、チェック・削除できます。この TODO はこのパソコンの Hizashi の中にだけ保存されます。</li>
+        <li>集中モードの開始ボタン（25分・50分）、メモを開くボタン、最近閉じたタブの一覧があります。</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/newtab.png" alt="新しいタブページ。時計と検索欄、ショートカットが並ぶ" loading="lazy" width="1384" height="904"><figcaption>新しいタブページ</figcaption></figure>
+  </div>
+
+  <div class="feature rev" id="others">
+    <div class="text">
+      <h2>そのほかの機能</h2>
+      <ul>
+        <li><strong>ピクチャーインピクチャー</strong>（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>）：いちばん大きい動画を小さな別ウィンドウにします。</li>
+        <li><strong>モバイル表示</strong>：スマホ用のページを表示します（パレットから）。もう一度実行すると戻ります。</li>
+        <li><strong>ページを日本語に翻訳</strong>：Google 翻訳で開きます（パレットから）。<span class="note">※実行すると、ページの URL が Google に送られます。</span></li>
+        <li><strong>印刷</strong>（<kbd>Ctrl</kbd>+<kbd>P</kbd>）、<strong>開発者ツール</strong>（<kbd>F12</kbd>）、<strong>全画面</strong>（<kbd>F11</kbd>。動画の全画面表示にも対応）。</li>
+        <li><strong>既定のブラウザで開く</strong>：いまのページを、ふだん使っている別のブラウザで開きます。</li>
+        <li><strong>ウィンドウの透明度</strong>（100・80・60・40%）と<strong>常に最前面</strong>：動画を見ながら作業するときなどに。</li>
+        <li><strong>ショートカットの作成</strong>：パレットで「ショートカット」と打つと、デスクトップとスタートメニューにショートカットを作ります。</li>
+        <li><strong>閲覧データの削除</strong>：パレットの「閲覧データ（Cookie・キャッシュ）を削除」。ログイン状態も解除されます。</li>
+        <li>ページの右クリックメニューは、標準のメニューに Hizashi の項目（リンクを横に並べて開く、選択範囲を検索・メモに追加、リーダーモードなど）を足したものです。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature" id="permissions">
+    <div class="text">
+      <h2>権限の確認</h2>
+      <p>サイトが<strong>カメラ・マイク・位置情報・通知・クリップボードの読み取り・MIDI</strong>を使おうとしたときは、許可するかどうかを確認する画面が出ます。「この選択を記憶する」にチェックすると、そのサイトでは次回から聞かれません。それ以外の権限は、WebView2 の標準の動作に従います。</p>
+    </div>
+  </div>
+
+  <div class="feature rev" id="settings">
+    <div class="text">
+      <span class="badge">Ctrl + ,</span>
+      <h2>設定</h2>
+      <p>右側のパネルで、次の項目を変更できます。変更はすぐ反映されます。</p>
+      <ul>
+        <li><strong>一般</strong>：起動時に前回のタブを復元／検索エンジン／タブの位置（上・左）／ブックマークバーの表示／全サイトを強制ダークモード</li>
+        <li><strong>プライバシー</strong>：広告・トラッカーのブロック／HTTPS 自動アップグレード／追跡パラメータの自動除去</li>
+        <li><strong>パフォーマンス</strong>：使っていないタブの自動休止（時間）</li>
+        <li><strong>ウィンドウ</strong>：常に最前面／透明度（30〜100%）</li>
+        <li><strong>集中モード</strong>：ブロックするサイトの一覧（1行に1つ）／25分・50分の開始ボタン</li>
+        <li><strong>検索ショートカットの一覧</strong>（確認用）</li>
+      </ul>
+    </div>
+    <figure><img src="screenshots/settings.png" alt="設定パネル" loading="lazy" width="1384" height="904"><figcaption>設定パネル</figcaption></figure>
+  </div>
+
+  <div class="doc" id="limits">
+    <div class="narrow">
+      <h2>できないこと・制限</h2>
+      <p>あらかじめ知っておいてほしいことを、正直に書きます。</p>
+      <ul>
+        <li><strong>拡張機能は使えません。</strong>Chrome ウェブストアの拡張機能には対応していません。</li>
+        <li><strong>シークレットウィンドウはありません。</strong>履歴を残したくないときは、履歴の削除や「閲覧データの削除」を使ってください。</li>
+        <li><strong>アカウントの同期はありません。</strong>別のパソコンへのブックマークなどの引き継ぎは、手動（<a href="guide.html#backup">データのバックアップと移行</a>）になります。</li>
+        <li><strong>Chrome などからのインポート機能はありません。</strong></li>
+        <li><strong>パスワードの管理機能は持っていません。</strong>フォームの入力補助は WebView2 の標準の仕組みに任せていて、動作は十分には検証していません。大切なパスワードは、専用のパスワード管理ツールの利用をおすすめします。</li>
+        <li><strong>Google アカウントでのログインは、うまくいかない場合があります。</strong>ブラウザの名乗りを Chrome に揃えていますが、「安全でないブラウザ」と判定される可能性があります（現在検証中）。</li>
+        <li><strong>広告ブロックはドメイン単位です。</strong>サイト自身が配信する広告は止められません。</li>
+        <li><strong>DRM で保護された動画</strong>（一部の配信サービス）は、動作を確認していません。</li>
+        <li>画面の言葉は日本語のみ。対応 OS は <strong>Windows 10 / 11 の64ビット</strong>のみです（ARM 版 Windows は未検証）。</li>
+        <li>自動更新はありません。新しい版は、<a href="download.html">ダウンロードのページ</a>から入手して、exe を入れ替えてください。</li>
+      </ul>
+      <div class="band" style="margin-top:32px">
+        <div><h2 style="font-size:22px">ほしい機能があったら</h2><p>GitHub の Issues で教えてください。</p></div>
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi/issues">要望・不具合を報告する</a>
+      </div>
+    </div>
+  </div>
+</div>

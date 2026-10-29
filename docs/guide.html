@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>使い方ガイド | Hizashi</title>
+<meta name="description" content="Hizashi の画面の見方、基本操作、よくある使い方のレシピ、データの保存場所とバックアップ、トラブルシューティング。">
+<link rel="canonical" href="https://kaikomziu.github.io/hizashi/guide.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hizashi">
+<meta property="og:title" content="使い方ガイド | Hizashi">
+<meta property="og:description" content="Hizashi の画面の見方、基本操作、よくある使い方のレシピ、データの保存場所とバックアップ、トラブルシューティング。">
+<meta property="og:url" content="https://kaikomziu.github.io/hizashi/guide.html">
+<meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10211a">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="assets/site.css">
+
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" aria-label="Hizashi トップへ"><img src="logo.png" alt="" width="36" height="36"><span>Hizashi</span></a>
+    <button class="nav-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav" aria-label="メインメニュー">
+      <a href="features.html">特長</a>
+      <a href="guide.html" aria-current="page">使い方</a>
+      <a href="shortcuts.html">ショートカット</a>
+      <a href="faq.html">よくある質問</a>
+      <a href="changelog.html">更新履歴</a>
+      <a href="download.html" class="cta">ダウンロード</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<div class="page-hero"><div class="wrap">
+  <span class="eyebrow">GUIDE</span>
+  <h1>使い方ガイド</h1>
+  <p>はじめて使う人向けに、画面の見方から、便利な使い方、困ったときの対処までをまとめました。</p>
+</div></div>
+
+<div class="wrap doc">
+  <nav class="toc" aria-label="このページの目次">
+    <h2>目次</h2>
+    <ol>
+      <li><a href="#screen">画面の見方</a></li>
+      <li><a href="#basics">基本の操作</a></li>
+      <li><a href="#recipes">使い方のレシピ</a></li>
+      <li><a href="#data">データの保存場所</a></li>
+      <li><a href="#backup">データのバックアップと移行</a></li>
+      <li><a href="#default">既定のブラウザについて</a></li>
+      <li><a href="#trouble">困ったとき</a></li>
+    </ol>
+  </nav>
+
+  <div class="narrow">
+    <h2 id="screen">画面の見方</h2>
+    <figure><img src="screenshots/newtab.png" alt="Hizashi の画面全体" loading="lazy" width="1384" height="904"><figcaption>新しいタブページを開いた状態</figcaption></figure>
+    <div class="tbl-wrap"><table>
+      <tr><th>場所</th><td>説明</td></tr>
+      <tr><th>タブバー</th><td>画面の上（縦タブのときは左）に、開いているタブが並びます。左端の丸いボタンはワークスペースです。</td></tr>
+      <tr><th>ツールバー</th><td>戻る・進む・再読み込み、アドレスバー、☆（ブックマーク）、ダークモード、シールド（広告ブロックの数とメニュー）、集中モードの残り時間、パネルを開くボタン、メニュー。</td></tr>
+      <tr><th>ブックマークバー</th><td>ツールバーの下。<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> で表示を切り替えます。</td></tr>
+      <tr><th>右側のパネル</th><td>メモ・履歴・ダウンロード・ブックマーク・設定・ヘルプが開きます。同時に開けるのは1つです。</td></tr>
+      <tr><th>コマンドパレット</th><td><kbd>Ctrl</kbd>+<kbd>K</kbd> で画面の中央に出ます。</td></tr>
+    </table></div>
+
+    <h2 id="basics">基本の操作</h2>
+    <ul>
+      <li><strong>ページを開く</strong>：アドレスバー（<kbd>Ctrl</kbd>+<kbd>L</kbd> で移動）に URL か言葉を入れて <kbd>Enter</kbd>。</li>
+      <li><strong>新しいタブ</strong>：<kbd>Ctrl</kbd>+<kbd>T</kbd>。<strong>閉じる</strong>：<kbd>Ctrl</kbd>+<kbd>W</kbd>。<strong>閉じたタブを戻す</strong>：<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd>。</li>
+      <li><strong>戻る・進む</strong>：<kbd>Alt</kbd>+<kbd>←</kbd> / <kbd>Alt</kbd>+<kbd>→</kbd>。</li>
+      <li><strong>再読み込み</strong>：<kbd>F5</kbd> または <kbd>Ctrl</kbd>+<kbd>R</kbd>。キャッシュを使わない再読み込みは <kbd>Ctrl</kbd>+<kbd>F5</kbd>。</li>
+      <li><strong>迷ったら</strong>：<kbd>Ctrl</kbd>+<kbd>K</kbd> を押して、やりたいことを日本語で打つ。</li>
+      <li><strong>ヘルプ</strong>：<kbd>F1</kbd> で、主なショートカットの一覧がパネルに出ます。</li>
+    </ul>
+
+    <h2 id="recipes">使い方のレシピ</h2>
+
+    <h3>仕事と趣味を分けて使う</h3>
+    <ol>
+      <li>左上の「＋」でワークスペースを追加し、「仕事」「趣味」と名前を付けます。</li>
+      <li>仕事用のタブは「仕事」に、それ以外は「趣味」に置きます。移したいタブは右クリック →「ワークスペースへ移動」。</li>
+      <li>以降は <kbd>Alt</kbd>+<kbd>1</kbd>、<kbd>Alt</kbd>+<kbd>2</kbd> で切り替えるだけです。</li>
+    </ol>
+    <p class="note">ワークスペースはタブの整理のための機能です。Cookie やログイン状態は分かれません（どのワークスペースでも同じログインのままです）。</p>
+
+    <h3>資料を見ながら書く</h3>
+    <ol>
+      <li>資料のページと、書く（またはメモする）ページを開きます。</li>
+      <li><kbd>Alt</kbd>+<kbd>S</kbd> で分割表示にします。</li>
+      <li>文章の引用は、文字を選択 → 右クリック →「選択範囲をメモに追加」。</li>
+    </ol>
+
+    <h3>長い記事を落ち着いて読む</h3>
+    <ol>
+      <li><kbd>F9</kbd> でリーダーモード。文字サイズと背景色を、読みやすいものに。</li>
+      <li>夜なら、リーダーモードのテーマを「黒」に。</li>
+      <li>読み終わったら <kbd>F9</kbd> で元のページに戻ります。</li>
+    </ol>
+
+    <h3>作業に集中する</h3>
+    <ol>
+      <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> で時間（例：50）を入れて開始。</li>
+      <li>対象のサイトは設定で自分用に書き換えます（「集中モード」の項目）。</li>
+    </ol>
+
+    <h3>うるさいページを静かにする</h3>
+    <ol>
+      <li>邪魔なバナーやポップアップは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> →クリックで消す。</li>
+      <li>広告のせいで開けないサイトは、シールドのメニューでそのサイトだけブロックを切る。</li>
+      <li>音が出るタブは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> でミュート。</li>
+    </ol>
+
+    <h3>ページを画像で残す・共有する</h3>
+    <ol>
+      <li>パレットで「スクリーンショット（ページ全体）」。「ピクチャ」の <code>Hizashi</code> フォルダに保存され、クリップボードにも入ります。</li>
+      <li>URL を共有するときは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> で、追跡情報を除いた URL をコピー。</li>
+    </ol>
+
+    <h3>よく使うサイトを素早く開く</h3>
+    <p>ブックマークに登録しておくと、新しいタブページの先頭12件、ブックマークバー、パレット（<code>*</code> で絞り込み）からすぐ開けます。検索ショートカット（<code>yt</code>、<code>gh</code> など）も覚えると速くなります（<a href="shortcuts.html#bangs">一覧</a>）。</p>
+
+    <h2 id="data">データの保存場所</h2>
+    <p>Hizashi のデータは、すべてあなたのパソコンの中に保存されます。</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>場所</th><th>内容</th></tr>
+      <tr><td><code>%APPDATA%\Hizashi\</code></td><td>設定（<code>settings.json</code>）、ブックマーク（<code>bookmarks.json</code>）、履歴（<code>history.json</code>）、メモ（<code>notes.json</code>）、サイトごとの設定（<code>sites.json</code>：ズーム・ダークモード・非表示にした要素・権限の記憶）、前回のタブ（<code>session.json</code>）</td></tr>
+      <tr><td><code>%LOCALAPPDATA%\Hizashi\WebView2\</code></td><td>Cookie・ログイン状態・キャッシュなど、ブラウザエンジンのデータ</td></tr>
+      <tr><td><code>%LOCALAPPDATA%\Hizashi\ui\</code></td><td>画面の部品（起動のたびに自動で用意されます。消しても構いません）</td></tr>
+      <tr><td><code>%LOCALAPPDATA%\Hizashi\error.log</code></td><td>エラーが起きたときの記録（あれば）</td></tr>
+      <tr><td><code>ピクチャ\Hizashi\</code></td><td>スクリーンショット</td></tr>
+      <tr><td><code>ダウンロード</code> フォルダ</td><td>ダウンロードしたファイル</td></tr>
+    </table></div>
+    <p>フォルダを開くには、エクスプローラーのアドレス欄に <code>%APPDATA%\Hizashi</code> などと入力して <kbd>Enter</kbd> を押します。</p>
+
+    <h2 id="backup">データのバックアップと移行</h2>
+    <p>アカウント同期はないので、別のパソコンに移すときは手動でコピーします。</p>
+    <ol>
+      <li>Hizashi を<strong>終了</strong>します。</li>
+      <li><code>%APPDATA%\Hizashi</code> フォルダを、まるごとコピーします（これがブックマーク・履歴・メモ・設定です）。</li>
+      <li>新しいパソコンで Hizashi を一度起動して終了し、コピーしたファイルを同じ場所に上書きします。</li>
+    </ol>
+    <p>ログイン状態（Cookie）は <code>%LOCALAPPDATA%\Hizashi\WebView2</code> にあります。移すこともできますが、サイトによってはログインし直しが必要になります。</p>
+
+    <h2 id="default">既定のブラウザについて</h2>
+    <p>Hizashi を Windows の「既定のブラウザ」に設定する機能は、まだありません。ほかのアプリのリンクから Hizashi で開くことはできません。URL を引数にして起動すると、そのページが開きます（<code>Hizashi.exe https://example.com</code>）。</p>
+
+    <h2 id="trouble">困ったとき</h2>
+    <h3>起動しない／画面が真っ白</h3>
+    <ul>
+      <li><a href="download.html#requirements">WebView2 ランタイム</a>が入っているか確認してください。</li>
+      <li><code>%LOCALAPPDATA%\Hizashi\ui</code> フォルダを削除してから、もう一度起動してみてください。</li>
+      <li>それでも直らないときは、<code>%LOCALAPPDATA%\Hizashi\error.log</code> の内容を添えて、<a href="https://github.com/kaikomziu/hizashi/issues">GitHub の Issues</a> で報告してください。（ログには、フォルダ名や、開いていたページのアドレスが含まれることがあります。公開する前に内容を確認してください。）</li>
+    </ul>
+    <h3>ログインできないサイトがある</h3>
+    <p>Google アカウントでのログインは、「安全でないブラウザ」と判定されて失敗する場合があります。その場合は、そのサイトだけほかのブラウザを使ってください（パレットの「既定のブラウザで開く」が便利です）。</p>
+    <h3>広告ブロックで表示がおかしい</h3>
+    <p>シールドのメニューから、そのサイトのブロックだけをオフにしてください。</p>
+    <h3>ページが暗すぎる／見にくい</h3>
+    <p>強制ダークモードがオンになっているかもしれません。ツールバーの半月のボタン、または <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> で切ってください。</p>
+    <h3>要素ブロッカーで消したものを戻したい</h3>
+    <p>パレットで「非表示要素」と打つと、「このサイトの非表示要素をすべて元に戻す」が出てきます。</p>
+    <h3>最初の状態に戻したい</h3>
+    <p>Hizashi を終了して、<a href="#data">データの保存場所</a>のフォルダを削除します。</p>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand small"><img src="logo.png" alt="" width="28" height="28"><span>Hizashi（日差し）</span></div>
+      <p>Chromium で動く、日本語ネイティブの多機能ブラウザ。Windows 用・無料・オープンソース（MIT）。</p>
+    </div>
+    <div>
+      <h2>サイト</h2>
+      <ul>
+        <li><a href="features.html">特長</a></li>
+        <li><a href="guide.html">使い方ガイド</a></li>
+        <li><a href="shortcuts.html">ショートカット</a></li>
+        <li><a href="faq.html">よくある質問</a></li>
+        <li><a href="changelog.html">更新履歴</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>ダウンロード・情報</h2>
+      <ul>
+        <li><a href="download.html">ダウンロード</a></li>
+        <li><a href="privacy.html">プライバシー</a></li>
+        <li><a href="press.html">ロゴ・素材</a></li>
+        <li><a href="en/index.html">English</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>リンク</h2>
+      <ul>
+        <li><a href="https://github.com/kaikomziu/hizashi">GitHub（ソースコード）</a></li>
+        <li><a href="https://github.com/kaikomziu/hizashi/issues">不具合の報告・要望</a></li>
+        <li><a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span>© 2026 kaikomziu（かるわか）</span>
+    <span>MIT License ・ 表示エンジンは Microsoft Edge WebView2</span>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

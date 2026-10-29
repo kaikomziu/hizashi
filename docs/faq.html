@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>よくある質問 | Hizashi</title>
+<meta name="description" content="Hizashi についてのよくある質問：Chrome との違い、安全性、拡張機能、メモリ、Google ログイン、SmartScreen、データの扱い、更新、対応 OS など。">
+<link rel="canonical" href="https://kaikomziu.github.io/hizashi/faq.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hizashi">
+<meta property="og:title" content="よくある質問 | Hizashi">
+<meta property="og:description" content="Hizashi についてのよくある質問：Chrome との違い、安全性、拡張機能、メモリ、Google ログイン、SmartScreen、データの扱い、更新、対応 OS など。">
+<meta property="og:url" content="https://kaikomziu.github.io/hizashi/faq.html">
+<meta property="og:image" content="https://kaikomziu.github.io/hizashi/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10211a">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="assets/site.css">
+
+</head>
+<body>
+<a class="skip" href="#main">本文へスキップ</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="index.html" aria-label="Hizashi トップへ"><img src="logo.png" alt="" width="36" height="36"><span>Hizashi</span></a>
+    <button class="nav-toggle" aria-label="メニューを開く" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    <nav id="site-nav" aria-label="メインメニュー">
+      <a href="features.html">特長</a>
+      <a href="guide.html">使い方</a>
+      <a href="shortcuts.html">ショートカット</a>
+      <a href="faq.html" aria-current="page">よくある質問</a>
+      <a href="changelog.html">更新履歴</a>
+      <a href="download.html" class="cta">ダウンロード</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<div class="page-hero"><div class="wrap">
+  <span class="eyebrow">FAQ</span>
+  <h1>よくある質問</h1>
+  <p>聞かれそうなことを、できるだけ正直に答えています。載っていないことは、<a href="https://github.com/kaikomziu/hizashi/issues">GitHub の Issues</a>で聞いてください。</p>
+</div></div>
+
+<div class="wrap doc">
+  <div class="narrow faq">
+    <h2>全般</h2>
+    <details id="what" open><summary>Hizashi とは何ですか？</summary>
+      <p>Windows 用のブラウザです。ページを表示する部分は Microsoft Edge と同じ Chromium（WebView2）で、その上に、コマンドパレット・ワークスペース・縦タブ・分割表示・集中モード・リーダーモードなどの機能を載せた、個人開発のブラウザです。</p></details>
+    <details><summary>Chrome や Edge との違いは何ですか？</summary>
+      <p>ページの表示や、Web の互換性は、ほぼ同じです（同じ Chromium を使うため）。違うのは周りの機能です。キーボードで操作しやすくする工夫（パレット）、タブの整理（ワークスペース・縦タブ・分割）、集中のための機能などを中心に作っています。逆に、Chrome にある拡張機能・アカウント同期・シークレットウィンドウなどはありません。</p></details>
+    <details><summary>無料ですか？ 広告は出ますか？</summary>
+      <p>無料です。広告は出ません。ライセンスは MIT で、商用利用や改造も自由です。</p></details>
+    <details><summary>なぜ作ったのですか？</summary>
+      <p>自分が毎日使うブラウザに、ほしい機能を足していったら、公開できるものになったからです。</p></details>
+    <details><summary>名前の由来は？</summary>
+      <p>「日差し」です。木漏れ日（Komorebi）という名前の試作版（Electron 製）があり、そこから作り直したときに名前を変えました。</p></details>
+
+    <h2>安全性・プライバシー</h2>
+    <details id="safe"><summary>安全ですか？</summary>
+      <p>ソースコードはすべて公開されていて、配布している exe は公開されたソースから GitHub Actions が自動でビルドしたものです。ダウンロードしたファイルは、<a href="download.html#sha">SHA-256</a>で照合できます。ページの表示と通信の安全性は、Chromium（WebView2）に任せています。WebView2 は、Windows Update や Microsoft のランタイムの更新で、セキュリティの修正が入ります。</p>
+      <p>ただし、個人が作った小さなソフトウェアで、第三者による監査は受けていません。重要な用途（銀行など）で使うかは、ご自身で判断してください。</p></details>
+    <details><summary>情報は送信されますか？</summary>
+      <p>Hizashi 自身は、利用状況・閲覧履歴・設定などを一切送信しません。詳しくは<a href="privacy.html">プライバシー</a>のページを見てください。</p></details>
+    <details id="smartscreen"><summary>起動すると「Windows によってPCが保護されました」と出ます</summary>
+      <p>コード署名をしていないためです。「詳細情報」→「実行」で起動できます。手順は<a href="download.html#smartscreen">ダウンロードのページ</a>にあります。</p></details>
+    <details><summary>ウイルス対策ソフトが反応しました</summary>
+      <p>署名がなく、数の少ないプログラムは、誤検知されることがあります。<a href="download.html#sha">SHA-256</a>が一致していることを確認した上で、不安な場合は使わないでください。誤検知が続くようなら、<a href="https://github.com/kaikomziu/hizashi/issues">Issues</a>で教えてもらえると助かります。</p></details>
+
+    <h2>機能</h2>
+    <details><summary>Chrome の拡張機能は使えますか？</summary>
+      <p>使えません。ブラウザエンジンとして使っている WebView2 が、拡張機能に対応していないためです。広告ブロックなど、よく使われる機能は Hizashi に最初から入れています。</p></details>
+    <details><summary>広告ブロックは、uBlock Origin のように強力ですか？</summary>
+      <p>いいえ。Hizashi の広告ブロックは、広告・計測を行う約約110件のドメインへの通信を止めるだけの、単純な仕組みです。サイト自身が配信する広告（YouTube の動画広告など）は止められません。強力なブロックがほしい人には向いていません。</p></details>
+    <details><summary>Google アカウントでログインできますか？</summary>
+      <p>うまくいかない場合があります。Google は、組み込みのブラウザからのログインを「安全でないブラウザ」として拒否することがあります。Hizashi はブラウザの名乗りを Chrome に揃えていますが、確実に通ることは確認できていません。ログインできないときは、そのサイトだけほかのブラウザを使ってください。Google 以外のサイトのログインは、ふつうに使えます。</p></details>
+    <details><summary>パスワードの保存や自動入力はできますか？</summary>
+      <p>Hizashi 独自のパスワード管理機能はありません。入力補助は WebView2 の標準の仕組みに任せていて、動作は十分に確認していません。大切なパスワードは、専用のパスワード管理ツールを使うことをおすすめします。</p></details>
+    <details><summary>シークレットウィンドウはありますか？</summary>
+      <p>ありません。履歴は、履歴パネルから削除でき、Cookie とキャッシュは、パレットの「閲覧データを削除」で消せます。</p></details>
+    <details><summary>ブックマークや履歴を Chrome から取り込めますか？</summary>
+      <p>今のところ、インポート機能はありません。</p></details>
+    <details><summary>ブックマークや設定を、別のパソコンと同期できますか？</summary>
+      <p>同期はできません。手動で引き継ぐ方法は、<a href="guide.html#backup">使い方ガイド</a>に書いています。</p></details>
+    <details><summary>動画配信サービス（Netflix など）は見られますか？</summary>
+      <p>YouTube や一般的な動画サイトは見られます。DRM（著作権保護）つきの配信サービスは、動作を確認していません。</p></details>
+    <details><summary>日本語以外の言語に対応していますか？</summary>
+      <p>画面の言葉は日本語のみです。ページを翻訳するコマンドは、Google 翻訳を使って日本語に訳します（実行すると、ページの URL が Google に送られます）。</p></details>
+
+    <h2>性能・動作環境</h2>
+    <details><summary>軽いですか？ メモリはどのくらい使いますか？</summary>
+      <p>「軽い」とは言えません。ページを表示する部分は Chromium なので、タブの数に応じて、Chrome や Edge と同じくらいのメモリを使います。Electron 製の試作版と同じ条件で測ったところ、ほぼ同じ水準でした。使っていないタブを休止する機能で、使用量を抑えられます。</p></details>
+    <details><summary>exe が約46MBもあるのはなぜですか？</summary>
+      <p>.NET の実行環境を exe の中に詰め込んでいるためです（そのおかげで、別途インストールが要りません）。.NET 9 のランタイムを入れている人は、ソースから約1.9MBの小さい版もビルドできます。</p></details>
+    <details><summary>Windows 7 / 8 や Mac、Linux、スマホでは使えますか？</summary>
+      <p>使えません。Windows 10 / 11 の64ビット版だけです。</p></details>
+    <details><summary>起動しません</summary>
+      <p><a href="guide.html#trouble">使い方ガイドの「困ったとき」</a>を見てください。</p></details>
+
+    <h2>更新・削除</h2>
+    <details><summary>更新はどうすればいいですか？</summary>
+      <p>自動更新はありません。<a href="download.html">ダウンロードのページ</a>から新しい exe を入手して、古い exe と入れ替えてください。データはそのまま引き継がれます。</p></details>
+    <details><summary>どうやって削除しますか？</summary>
+      <p>exe を削除するだけです。データも消したい場合は、<a href="guide.html#data">データの保存場所</a>のフォルダを削除してください。</p></details>
+
+    <h2>開発・ライセンス</h2>
+    <details><summary>ソースコードは見られますか？ 改造や再配布はできますか？</summary>
+      <p><a href="https://github.com/kaikomziu/hizashi">GitHub</a>で公開しています。MIT ライセンスなので、改造・再配布・商用利用が自由にできます（著作権表示とライセンス文は残してください）。</p></details>
+    <details><summary>要望や不具合はどこに伝えればいいですか？</summary>
+      <p><a href="https://github.com/kaikomziu/hizashi/issues">GitHub の Issues</a>へどうぞ。個人開発なので、対応には時間がかかることがあります。セキュリティ上の問題は、公開の場ではなく、<a href="https://github.com/kaikomziu/hizashi/security/policy">セキュリティポリシー</a>の方法で連絡してください。</p></details>
+    <details><summary>開発に参加できますか？</summary>
+      <p>歓迎です。<a href="https://github.com/kaikomziu/hizashi/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>を見てください。</p></details>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand small"><img src="logo.png" alt="" width="28" height="28"><span>Hizashi（日差し）</span></div>
+      <p>Chromium で動く、日本語ネイティブの多機能ブラウザ。Windows 用・無料・オープンソース（MIT）。</p>
+    </div>
+    <div>
+      <h2>サイト</h2>
+      <ul>
+        <li><a href="features.html">特長</a></li>
+        <li><a href="guide.html">使い方ガイド</a></li>
+        <li><a href="shortcuts.html">ショートカット</a></li>
+        <li><a href="faq.html">よくある質問</a></li>
+        <li><a href="changelog.html">更新履歴</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>ダウンロード・情報</h2>
+      <ul>
+        <li><a href="download.html">ダウンロード</a></li>
+        <li><a href="privacy.html">プライバシー</a></li>
+        <li><a href="press.html">ロゴ・素材</a></li>
+        <li><a href="en/index.html">English</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>リンク</h2>
+      <ul>
+        <li><a href="https://github.com/kaikomziu/hizashi">GitHub（ソースコード）</a></li>
+        <li><a href="https://github.com/kaikomziu/hizashi/issues">不具合の報告・要望</a></li>
+        <li><a href="https://kaikomziu.github.io/game-links/">かるわか GAMES</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap copy">
+    <span>© 2026 kaikomziu（かるわか）</span>
+    <span>MIT License ・ 表示エンジンは Microsoft Edge WebView2</span>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

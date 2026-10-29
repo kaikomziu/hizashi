@@ -766,7 +766,65 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         await Snap("shots/05-notes");
         HideOverlay(false);
 
-        // 6) 集中モード
+        // 6) 設定・コマンド一覧・履歴パネル
+        foreach (var (name, file) in new[] { ("settings", "07-settings"), ("help", "08-help"), ("history", "09-history") })
+        {
+            OpenPanel(name);
+            await Sleep(1500);
+            await Snap("shots/" + file);
+            HideOverlay(false);
+        }
+
+        // 7) リーダーモード（単独）
+        var rd = CreateTab(Url("column.html"));
+        await WaitLoad(rd);
+        await Sleep(600);
+        RunCommand("tools.reader");
+        await Sleep(3800);
+        await Snap("shots/10-reader");
+        CloseTab(rd.Id);
+
+        // 8) ページ内検索
+        var fd = CreateTab(Url("column.html"));
+        await WaitLoad(fd);
+        await Sleep(600);
+        RunCommand("view.find");
+        await Sleep(500);
+        await UiJs(chrome, "(() => { const i = document.getElementById('find-input'); i.value = 'タブ'; i.dispatchEvent(new Event('input')); return 1; })()");
+        await Sleep(1500);
+        await Snap("shots/11-find");
+        await UiJs(chrome, "document.getElementById('find-close').click()");
+        CloseTab(fd.Id);
+
+        // 9) 要素ブロッカー（消す前と後）
+        var bl = CreateTab(Url("column.html"));
+        await WaitLoad(bl);
+        await Sleep(600);
+        await JS(bl, "document.getElementById('promo').scrollIntoView({block:'center'}); 1");
+        await Sleep(900);
+        await Snap("shots/12-blocker-before");
+        RunCommand("tools.picker");
+        await Sleep(900);
+        var pr = JsonDocument.Parse(await JS(bl, "JSON.stringify(document.getElementById('promo').getBoundingClientRect())")).RootElement;
+        await ClickAt(bl.Core, (int)(pr.Num("x") + pr.Num("width") / 2), (int)(pr.Num("y") + pr.Num("height") / 2));
+        await Sleep(4300);
+        await Snap("shots/13-blocker-after");
+        Sites.Hidden.Clear();
+        CloseTab(bl.Id);
+
+        // 10) 縦タブ（折りたたみ）
+        ActivateTab(a.Id);
+        S.TabLayout = "side";
+        S.SidebarCollapsed = true;
+        ScheduleState();
+        await Sleep(1400);
+        await Snap("shots/14-side-collapsed");
+        S.TabLayout = "top";
+        S.SidebarCollapsed = false;
+        ScheduleState();
+        await Sleep(800);
+
+        // 11) 集中モード
         StartFocus(25);
         var ft = CreateTab("https://www.youtube.com/");
         await Sleep(3500);

@@ -1,0 +1,30 @@
+<!--meta {"title":"ショートカット・コマンド一覧","description":"Hizashi の全コマンド（{{CMD_TOTAL}}個）とキーボードショートカット、アドレスバーの検索ショートカット（{{BANG_COUNT}}個）の一覧。","nav":"features"} -->
+<div class="page-hero"><div class="wrap">
+  <span class="eyebrow">REFERENCE</span>
+  <h1>ショートカット・コマンド一覧</h1>
+  <p>Hizashi のすべてのコマンドと、キーボードショートカットの一覧です。ショートカットがないコマンドも、<kbd>Ctrl</kbd>+<kbd>K</kbd> のコマンドパレットから実行できます。</p>
+</div></div>
+
+<div class="wrap doc">
+  <div class="narrow">
+    <p class="note">この一覧は、Hizashi のソースコードから自動で作っています。アプリの中では <kbd>F1</kbd> でも見られます。</p>
+
+    <h2 id="commands">コマンド一覧（{{CMD_TOTAL}}個）</h2>
+    {{COMMANDS}}
+
+    <h2 id="extra">そのほかのキー操作</h2>
+    <p>コマンド一覧には載らない、補助的なキーです。</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>キー</th><th>動作</th></tr>
+      <tr><td><kbd>F5</kbd></td><td>再読み込み</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>F5</kbd></td><td>キャッシュを使わずに再読み込み</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>1〜9</kbd></td><td>左から数えたタブへ移動（9は最後のタブ）</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>1〜9</kbd></td><td>ワークスペースの切り替え</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>パレット・検索・要素ブロッカー・パネルを閉じる</td></tr>
+    </table></div>
+
+    <h2 id="bangs">アドレスバーの検索ショートカット（{{BANG_COUNT}}個）</h2>
+    <p>アドレスバーや新しいタブページの検索欄の先頭に、キーワードと空白を付けて言葉を入れると、そのサイトの中を直接検索します。<code>yt ねこ</code> のほか、<code>!yt ねこ</code> のように <code>!</code> を付けても使えます。</p>
+    {{BANGS}}
+  </div>
+</div>

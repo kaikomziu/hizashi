@@ -62,6 +62,8 @@
     </div>
     <p class="note">ボタンを押すと、GitHub のリリースから直接ダウンロードされます（このサイトのボタンは、常に最新版を指します）。バージョン・公開日・サイズの表示は、このページを開いたときに GitHub に問い合わせて更新します（取得できないときは、上の表示のままです）。</p>
 
+    <div class="callout"><p><strong>Android をお使いの方へ：</strong>Android 版（試験版）もあります。<a href="#android">下のセクション</a>を見てください。</p></div>
+
     <h2 id="start">はじめかた</h2>
     <ol class="steps">
       <li><b>ダウンロード</b><br>ダウンロードした <code>Hizashi.exe</code> を、好きなフォルダに置きます（デスクトップなど）。</li>
@@ -96,7 +98,34 @@
     <div class="sha" data-sha>（最新版の値は、<a href="https://github.com/kaikomziu/hizashi/releases/latest">リリースのページ</a>にある <code>SHA256SUMS.txt</code> と、リリースノートに載っています）</div>
     <p class="note">このページの値は、GitHub のリリースノートを読み込んで表示しています。表示されないときは、リリースのページを直接見てください。</p>
 
-    <h2 id="requirements">動作環境</h2>
+    <h2 id="android">Android 版（試験版）</h2>
+    <div class="dl-box">
+      <div>
+        <h3>Hizashi.apk</h3>
+        <dl class="kv">
+          <dt>バージョン</dt><dd>v0.1.0（試験版）</dd>
+          <dt>サイズ</dt><dd>約 5 MB</dd>
+          <dt>対応 OS</dt><dd>Android 10 以降</dd>
+          <dt>ライセンス</dt><dd>MIT（無料）</dd>
+        </dl>
+      </div>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi-android/releases/download/v0.1.0/Hizashi-0.1.0.apk">Hizashi-0.1.0.apk をダウンロード</a>
+        <a class="btn ghost" href="https://github.com/kaikomziu/hizashi-android/releases">リリースノートを見る</a>
+      </div>
+    </div>
+    <p>Windows 版を Android 向けに作り直した別のアプリです。表示には端末の「Android System WebView」（Chromium）を使います。コマンドパレット、広告・トラッカーのブロック、集中モード、リーダーモード、要素ブロッカー、強制ダークモードなどがあります。ワークスペース・縦タブ・分割表示・クイックメモ・スクリーンショットは、Android 版にはありません。</p>
+    <div class="callout warn"><p><strong>まだ試験版です。</strong>実機での動作確認が十分ではありません。うまく動かないところは、<a href="https://github.com/kaikomziu/hizashi-android/issues">GitHub の Issues</a>で教えてください。</p></div>
+    <h3>インストールのしかた</h3>
+    <ol>
+      <li>上のボタンから APK をダウンロードして、開きます。</li>
+      <li>「このアプリのインストールを許可しますか？」と出たら、いま使っているブラウザ（またはファイル管理アプリ）に対して<strong>「この提供元のアプリを許可」</strong>をオンにします。</li>
+      <li>「インストール」を押して、起動します。</li>
+    </ol>
+    <p>Google Play には出していません。そのため、Play プロテクトが「不明なアプリ」と警告することがあります。APK は、公開されたソースから GitHub Actions が自動でビルドして、個人の鍵で署名したものです。ダウンロードしたファイルが正しいかどうかは、リリースのページにある <code>SHA256SUMS.txt</code> の値と照らして確かめられます。同じ鍵で署名しているので、新しい版は<strong>上書きインストール</strong>で、データを残したまま更新できます（自動更新はありません）。</p>
+    <p>できないこと：拡張機能、シークレットタブ、アカウント同期。広告ブロックはドメイン単位です。Google アカウントでのログインは、うまくいかない場合があります（未検証）。詳しくは<a href="https://github.com/kaikomziu/hizashi-android#readme">Android 版の README</a>を見てください。</p>
+
+    <h2 id="requirements">動作環境（Windows 版）</h2>
     <div class="tbl-wrap"><table>
       <tr><th>OS</th><td>Windows 10 / 11 の64ビット版（ARM 版 Windows は動作未確認）</td></tr>
       <tr><th>WebView2 ランタイム</th><td>必要です。Windows 11 と、更新された Windows 10 には最初から入っています。入っていなければ、起動時に案内が出ます（<a href="https://developer.microsoft.com/microsoft-edge/webview2/">Microsoft の配布ページ</a>から入手できます）。</td></tr>

@@ -679,8 +679,174 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         S.Opacity = 100;
         ApplyOpacityAndTop();
 
+        await TestTabScroll(bs);
+        await TestUpdater();
+
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
+    }
+
+
+    // ---------------------------------------------------------------- タブが増えたとき横にスクロールする
+    async Task TestTabScroll(string baseUrl)
+    {
+        await NormalizeWindow();
+        var keep = ActiveTab;
+        var added = new List<Tab>();
+        for (int i = 1; i <= 24; i++)
+            added.Add(CreateTab($"{baseUrl}/p?t=スクロール確認{i}", new TabOpts { Sleeping = true, Activate = false, Title = $"スクロール確認{i}" }));
+        await Sleep(1200);
+        const string info = "(() => { const s = document.getElementById('tabs-slot-top'); return JSON.stringify({ sw: s.scrollWidth, cw: s.clientWidth, sl: s.scrollLeft, ox: getComputedStyle(s).overflowX }); })()";
+        var j = JsonDocument.Parse(await UiJs(chrome, info)).RootElement;
+        Check("タブが多いと、横タブが横スクロールになる", j.GetProperty("sw").GetInt32() > j.GetProperty("cw").GetInt32() + 20 && j.GetProperty("ox").GetString() == "auto",
+            j.GetRawText());
+
+        // ホイールで左右に動く
+        await UiJs(chrome, "document.getElementById('tabs-slot-top').scrollLeft = 0; 1");
+        await UiJs(chrome, "document.getElementById('tabs-slot-top').dispatchEvent(new WheelEvent('wheel', { deltaY: 240, bubbles: true, cancelable: true })); 1");
+        await Sleep(200);
+        var sl = double.Parse(await UiJs(chrome, "document.getElementById('tabs-slot-top').scrollLeft"));
+        Check("ホイールでタブを横にスクロールできる", sl > 100, $"scrollLeft={sl}");
+
+        // 最後のタブを選ぶと、そのタブが見える位置まで動く
+        ActivateTab(added[^1].Id);
+        await Sleep(1500);
+        var vis = await UiJs(chrome, "(() => { const s = document.getElementById('tabs-slot-top').getBoundingClientRect(); const a = document.querySelector('.tab.active'); if (!a) return 'none'; const r = a.getBoundingClientRect(); return (r.left >= s.left - 1 && r.right <= s.right + 1) ? 'visible' : 'hidden:' + [r.left, r.right, s.left, s.right].join(','); })()");
+        Check("選んだタブが見える位置までスクロールする", vis == "visible", vis);
+        WinShot("16-window-many-tabs");
+
+        foreach (var t in added) CloseTab(t.Id, true);
+        if (keep != null && tabs.Contains(keep)) ActivateTab(keep.Id);
+        await Sleep(600);
+    }
+
+    // ---------------------------------------------------------------- 更新（GitHub のリリースを見て exe を入れ替える）
+    // 本物の GitHub には触れず、手元の偽サーバーで「確認 → ダウンロード → SHA-256 照合 → 入れ替え」を通す
+    async Task TestUpdater()
+    {
+        var dir = Path.Combine(testOut, "updater");
+        try { Directory.Delete(dir, true); } catch { }
+        Directory.CreateDirectory(dir);
+
+        var good = Encoding.ASCII.GetBytes("MZ" + new string('x', 30000));
+        var goodSha = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(good)).ToLowerInvariant();
+        var bad = Encoding.ASCII.GetBytes("MZ" + new string('y', 30000));
+        string mode = "ok";
+
+        HttpListener l = null;
+        string root = null;
+        var rnd = new Random();
+        for (int i = 0; i < 20 && l == null; i++)
+        {
+            var port = rnd.Next(20000, 60000);
+            var x = new HttpListener();
+            x.Prefixes.Add($"http://127.0.0.1:{port}/");
+            try { x.Start(); l = x; root = $"http://127.0.0.1:{port}"; } catch { x.Close(); }
+        }
+        if (l == null) { Check("更新テスト用サーバーを起動できる", false); return; }
+        var listener = l;
+        var baseRoot = root;
+        _ = Task.Run(async () =>
+        {
+            while (listener.IsListening)
+            {
+                HttpListenerContext c;
+                try { c = await listener.GetContextAsync(); } catch { return; }
+                var path = c.Request.Url.AbsolutePath;
+                byte[] body;
+                if (path == "/api")
+                {
+                    c.Response.ContentType = "application/json";
+                    var json = JsonSerializer.Serialize(new
+                    {
+                        tag_name = "v9.9.9",
+                        html_url = "https://github.com/kaikomziu/hizashi/releases/tag/v9.9.9",
+                        body = mode == "nosha" ? "## 変更\n- なし" : $"## ダウンロード\nSHA-256: `{goodSha}`\n\n- 更新機能のテスト\n- 2つ目の変更",
+                        assets = new[] { new { name = "Hizashi.exe", browser_download_url = baseRoot + (mode == "badhash" ? "/bad.exe" : "/Hizashi.exe"), size = good.Length } },
+                    });
+                    body = Encoding.UTF8.GetBytes(json);
+                }
+                else if (path == "/Hizashi.exe") { c.Response.ContentType = "application/octet-stream"; body = good; }
+                else if (path == "/bad.exe") { c.Response.ContentType = "application/octet-stream"; body = bad; }
+                else { c.Response.StatusCode = 404; body = Array.Empty<byte>(); }
+                try { c.Response.OutputStream.Write(body); c.Response.Close(); } catch { }
+            }
+        });
+
+        Environment.SetEnvironmentVariable("HIZASHI_UPDATE_API", baseRoot + "/api");
+        try
+        {
+            using var http = Updater.CreateClient();
+
+            // 確認
+            var rel = await Limit(Updater.CheckAsync(http), 15000, "更新の確認");
+            Check("更新の確認でリリース情報を読める", rel.Tag == "v9.9.9" && rel.Version == new Version(9, 9, 9) && rel.Sha256 == goodSha, rel.Tag);
+            Check("いまの版より新しいと判定する", Updater.IsNewer(rel, Updater.Current()));
+            Check("同じ版・古い版は更新なしと判定する", !Updater.IsNewer(rel, new Version(9, 9, 9)) && !Updater.IsNewer(rel, new Version(10, 0, 0)));
+            Check("リリースノートの箇条書きを要約できる", SummarizeNotes(rel.Notes).Contains("・更新機能のテスト") && SummarizeNotes(rel.Notes).Contains("・2つ目の変更"), SummarizeNotes(rel.Notes));
+
+            // ダウンロードして入れ替え
+            var target = Path.Combine(dir, "Hizashi.exe");
+            File.WriteAllText(target, "OLD-VERSION");
+            var tmp = target + ".update";
+            await Updater.DownloadAsync(http, rel, tmp).WaitAsync(TimeSpan.FromSeconds(20));
+            Check("ダウンロードして SHA-256 が一致する", File.Exists(tmp) && File.ReadAllBytes(tmp).SequenceEqual(good));
+            Updater.Swap(tmp, target);
+            Check("入れ替え後は新しい exe になる", File.ReadAllBytes(target).SequenceEqual(good));
+            Check("古い exe は .old として残る（動作中でも名前変更で退避できる）", File.ReadAllText(target + ".old") == "OLD-VERSION");
+            Check("入れ替え後にダウンロードの一時ファイルが残らない", !File.Exists(tmp));
+
+            // 2回目の更新でも、前回の .old を片付けて入れ替えられる
+            File.WriteAllText(tmp, "MZ-second");
+            Updater.Swap(tmp, target);
+            Check("続けて入れ替えても失敗しない", File.ReadAllText(target) == "MZ-second" && File.Exists(target + ".old"));
+
+            // SHA-256 が違うファイルは捨てる
+            mode = "badhash";
+            var rel2 = await Limit(Updater.CheckAsync(http), 15000, "更新の確認");
+            var tmp2 = Path.Combine(dir, "bad.update");
+            var rejected = false;
+            try { await Updater.DownloadAsync(http, rel2, tmp2).WaitAsync(TimeSpan.FromSeconds(20)); }
+            catch (InvalidDataException) { rejected = true; }
+            Check("SHA-256 が一致しないファイルは受け付けず、消す", rejected && !File.Exists(tmp2));
+
+            // SHA-256 が無いリリースは更新しない
+            mode = "nosha";
+            var noSha = false;
+            try { await Limit(Updater.CheckAsync(http), 15000, "更新の確認"); }
+            catch (InvalidDataException) { noSha = true; }
+            Check("SHA-256 の無いリリースは更新しない", noSha);
+
+            // 入れ替えられない場所・開発用の実行は自動更新しない
+            Check("Hizashi.exe 以外（開発用の実行など）は自動で入れ替えない", !Updater.CanReplace(Path.Combine(dir, "dotnet.exe"), out var why) && !string.IsNullOrEmpty(why));
+            Check("書き込めるフォルダの Hizashi.exe は入れ替えられる", Updater.CanReplace(target, out _));
+        }
+        catch (Exception e)
+        {
+            Check("更新の流れが最後まで通る", false, e.GetType().Name + ": " + e.Message);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("HIZASHI_UPDATE_API", null);
+            try { listener.Stop(); } catch { }
+        }
+
+        // 実際の GitHub を読めることの確認（HIZASHI_TEST_NET=1 のときだけ。公開後に一度、手元で確かめる用）
+        if (Environment.GetEnvironmentVariable("HIZASHI_TEST_NET") == "1")
+        {
+            try
+            {
+                using var h = Updater.CreateClient();
+                var r = await Limit(Updater.CheckAsync(h), 20000, "GitHubへの確認");
+                Check("（通信あり）GitHub の最新リリースを読める", r.Sha256.Length == 64 && r.ExeUrl.StartsWith("https://github.com/kaikomziu/hizashi/releases/download/"), r.Tag + " " + r.ExeUrl);
+            }
+            catch (Exception e) { Check("（通信あり）GitHub の最新リリースを読める", false, e.Message); }
+        }
+
+        // 通常時は本家リポジトリの最新リリースを見に行く（通信はしない）
+        var api = typeof(Updater).GetProperty("ApiUrl", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.GetValue(null) as string;
+        Check("通常時の問い合わせ先は kaikomziu/hizashi の releases/latest", api == "https://api.github.com/repos/kaikomziu/hizashi/releases/latest", api);
+        Check("「更新を確認」コマンドがある", commands.Any(c => c.Id == "app.update"));
     }
 
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット

@@ -274,6 +274,7 @@
         <li><strong>ミュート</strong>：音が出ているタブにスピーカーのアイコンが付きます。クリックでミュート、<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> でも切り替えます。</li>
         <li><strong>並べ替え</strong>：ドラッグ。<strong>閉じる</strong>：×ボタン、中クリック、<kbd>Ctrl</kbd>+<kbd>W</kbd>。</li>
         <li><strong>複製</strong>・<strong>他のタブを閉じる</strong>：タブの右クリックメニューから。</li>
+        <li><strong>たくさん開いたとき</strong>：横タブは、狭くなりすぎる前に横スクロールになります。マウスのホイールで左右に動かせて、タブを選ぶとそのタブが見える位置まで自動で動きます。縦タブは、もともと縦にスクロールします。</li>
         <li><strong>切り替え</strong>：<kbd>Ctrl</kbd>+<kbd>Tab</kbd>（逆は <kbd>Shift</kbd> も）、<kbd>Ctrl</kbd>+<kbd>1〜9</kbd>（9は最後のタブ）。</li>
         <li>リンクの <code>target="_blank"</code> や <code>window.open</code> は新しいタブで開きます。ログイン用のポップアップも、タブとして開いて元のページに結果を返せます。</li>
         <li>ウィンドウは1つだけです。2つ目の Hizashi を起動すると、すでに開いているウィンドウが前面に出ます（URL を渡した場合はそのタブが開きます）。</li>
@@ -317,6 +318,7 @@
         <li><strong>印刷</strong>（<kbd>Ctrl</kbd>+<kbd>P</kbd>）、<strong>開発者ツール</strong>（<kbd>F12</kbd>）、<strong>全画面</strong>（<kbd>F11</kbd>。動画の全画面表示にも対応）。</li>
         <li><strong>既定のブラウザで開く</strong>：いまのページを、ふだん使っている別のブラウザで開きます。</li>
         <li><strong>ウィンドウの透明度</strong>（100・80・60・40%）と<strong>常に最前面</strong>：動画を見ながら作業するときなどに。</li>
+        <li><strong>更新を確認</strong>：設定パネルの一番上のボタン、またはパレットの「更新を確認（GitHub）」。GitHub のリリースを見て、新しい版があれば、ダウンロード（SHA-256 を照合）・入れ替え・再起動まで行います。</li>
         <li><strong>ショートカットの作成</strong>：パレットで「ショートカット」と打つと、デスクトップとスタートメニューにショートカットを作ります。</li>
         <li><strong>閲覧データの削除</strong>：パレットの「閲覧データ（Cookie・キャッシュ）を削除」。ログイン状態も解除されます。</li>
         <li>ページの右クリックメニューは、標準のメニューに Hizashi の項目（リンクを横に並べて開く、選択範囲を検索・メモに追加、リーダーモードなど）を足したものです。</li>
@@ -337,6 +339,7 @@
       <h2>設定</h2>
       <p>右側のパネルで、次の項目を変更できます。変更はすぐ反映されます。</p>
       <ul>
+        <li><strong>アップデート</strong>：「更新を確認」ボタン（GitHub で新しい版を探して、あれば更新）</li>
         <li><strong>一般</strong>：起動時に前回のタブを復元／検索エンジン／タブの位置（上・左）／ブックマークバーの表示／全サイトを強制ダークモード</li>
         <li><strong>プライバシー</strong>：広告・トラッカーのブロック／HTTPS 自動アップグレード／追跡パラメータの自動除去</li>
         <li><strong>パフォーマンス</strong>：使っていないタブの自動休止（時間）</li>
@@ -362,7 +365,7 @@
         <li><strong>広告ブロックはドメイン単位です。</strong>サイト自身が配信する広告は止められません。</li>
         <li><strong>DRM で保護された動画</strong>（一部の配信サービス）は、動作を確認していません。</li>
         <li>画面の言葉は日本語のみ。対応 OS は <strong>Windows 10 / 11 の64ビット</strong>のみです（ARM 版 Windows は未検証）。</li>
-        <li>自動更新はありません。新しい版は、<a href="download.html">ダウンロードのページ</a>から入手して、exe を入れ替えてください。</li>
+        <li>自動更新はありません。新しい版は、設定の「更新を確認」ボタンを押すと見つけて入れ替えられます（v1.1.0 以降。押したときだけ通信します）。<a href="download.html#update">詳しく</a></li>
       </ul>
       <div class="band" style="margin-top:32px">
         <div><h2 style="font-size:22px">ほしい機能があったら</h2><p>GitHub の Issues で教えてください。</p></div>

@@ -48,8 +48,8 @@
       <div>
         <h2>Hizashi.exe</h2>
         <dl class="kv">
-          <dt>バージョン</dt><dd data-version>v1.0.1</dd>
-          <dt>公開日</dt><dd data-date>2026年10月28日</dd>
+          <dt>バージョン</dt><dd data-version>v1.1.0</dd>
+          <dt>公開日</dt><dd data-date>2026年11月12日</dd>
           <dt>サイズ</dt><dd data-size>約 46 MB</dd>
           <dt>対応 OS</dt><dd>Windows 10 / 11（64ビット）</dd>
           <dt>ライセンス</dt><dd>MIT（無料・商用利用も可）</dd>
@@ -103,14 +103,14 @@
       <div>
         <h3>Hizashi.apk</h3>
         <dl class="kv">
-          <dt>バージョン</dt><dd>v0.1.0（試験版）</dd>
+          <dt>バージョン</dt><dd>v0.2.0（試験版）</dd>
           <dt>サイズ</dt><dd>約 5 MB</dd>
           <dt>対応 OS</dt><dd>Android 10 以降</dd>
           <dt>ライセンス</dt><dd>MIT（無料）</dd>
         </dl>
       </div>
       <div class="btns">
-        <a class="btn primary" href="https://github.com/kaikomziu/hizashi-android/releases/download/v0.1.0/Hizashi-0.1.0.apk">Hizashi-0.1.0.apk をダウンロード</a>
+        <a class="btn primary" href="https://github.com/kaikomziu/hizashi-android/releases/download/v0.2.0/Hizashi-0.2.0.apk">Hizashi-0.2.0.apk をダウンロード</a>
         <a class="btn ghost" href="https://github.com/kaikomziu/hizashi-android/releases">リリースノートを見る</a>
       </div>
     </div>
@@ -122,7 +122,7 @@
       <li>「このアプリのインストールを許可しますか？」と出たら、いま使っているブラウザ（またはファイル管理アプリ）に対して<strong>「この提供元のアプリを許可」</strong>をオンにします。</li>
       <li>「インストール」を押して、起動します。</li>
     </ol>
-    <p>Google Play には出していません。そのため、Play プロテクトが「不明なアプリ」と警告することがあります。APK は、公開されたソースから GitHub Actions が自動でビルドして、個人の鍵で署名したものです。ダウンロードしたファイルが正しいかどうかは、リリースのページにある <code>SHA256SUMS.txt</code> の値と照らして確かめられます。同じ鍵で署名しているので、新しい版は<strong>上書きインストール</strong>で、データを残したまま更新できます（自動更新はありません）。</p>
+    <p>Google Play には出していません。そのため、Play プロテクトが「不明なアプリ」と警告することがあります。APK は、公開されたソースから GitHub Actions が自動でビルドして、個人の鍵で署名したものです。ダウンロードしたファイルが正しいかどうかは、リリースのページにある <code>SHA256SUMS.txt</code> の値と照らして確かめられます。同じ鍵で署名しているので、新しい版は<strong>上書きインストール</strong>で、データを残したまま更新できます。Android 版 0.2.0 以降は、アプリのメニューの「更新を確認（GitHub）」から更新できます（押したときだけ通信します。自動更新はありません）。0.1.0 には更新ボタンがないので、手動で入れてください。</p>
     <p>できないこと：拡張機能、シークレットタブ、アカウント同期。広告ブロックはドメイン単位です。Google アカウントでのログインは、うまくいかない場合があります（未検証）。詳しくは<a href="https://github.com/kaikomziu/hizashi-android#readme">Android 版の README</a>を見てください。</p>
 
     <h2 id="requirements">動作環境（Windows 版）</h2>
@@ -135,7 +135,13 @@
     </table></div>
 
     <h2 id="update">更新するには</h2>
-    <p>自動更新はありません。新しい版が出たら、この<a href="download.html">ダウンロードのページ</a>から新しい exe を入手して、古い exe に上書き（入れ替え）してください。設定・ブックマーク・履歴などは別の場所に保存されているので、そのまま引き継がれます。新しい版の内容は<a href="changelog.html">更新履歴</a>にあります。</p>
+    <p><strong>v1.1.0 以降</strong>は、アプリの中から更新できます。設定パネル（<kbd>Ctrl</kbd>+<kbd>,</kbd>）の一番上にある<strong>「更新を確認」</strong>ボタン、またはコマンドパレットの「更新を確認（GitHub）」を押してください。</p>
+    <ol>
+      <li>GitHub のリリースを調べて、新しい版があれば確認の画面が出ます（更新の内容も表示されます）。</li>
+      <li>「更新する」を押すと、新しい exe をダウンロードして、SHA-256 を照合し、入れ替えて、自動で再起動します。</li>
+      <li>「起動時に前回のタブを復元」がオンなら、開いていたタブも戻ります。設定・ブックマーク・履歴などは別の場所にあるので、そのまま引き継がれます。</li>
+    </ol>
+    <p>通信は、ボタンを押したときだけです。起動時などに自動で確認することはありません（<a href="privacy.html">プライバシー</a>）。照合が合わないファイルは使わずに捨てます。Program Files のように書き込めない場所に置いている場合は、自動では入れ替えられないので、このページから新しい exe を入手して、古い exe と入れ替えてください。<strong>v1.0.1 以前にはこのボタンがない</strong>ので、その場合も、このページから入れ替えてください。新しい版の内容は<a href="changelog.html">更新履歴</a>にあります。</p>
 
     <h2 id="uninstall">削除するには</h2>
     <p>インストールをしていないので、<code>Hizashi.exe</code> を削除するだけで終わりです。データも消したいときは、<a href="guide.html#data">使い方ガイドのデータの場所</a>にあるフォルダを削除してください。ショートカットを作っていた場合は、デスクトップとスタートメニューのショートカットも削除します。</p>

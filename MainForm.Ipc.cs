@@ -102,6 +102,7 @@ public partial class MainForm
                     focusSites = S.FocusSites,
                     engines = Search.Engines.Select(x => new { id = x.Key, name = x.Value.Name }).ToList(),
                     bangs = Search.Bangs.Keys.ToList(),
+                    version = Updater.Current().ToString(3),
                 };
             case "help":
                 return commands.Select(x => new { id = x.Id, label = x.Label, keys = x.Keys }).ToList();

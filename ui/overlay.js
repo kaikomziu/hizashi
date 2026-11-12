@@ -451,6 +451,11 @@ function renderSettings(cfg, fresh) {
   // 設定は操作中に作り直すと入力が飛ぶので、パネルを開いたときだけ描画する
   if (!fresh) return;
   const wrap = h('div', 'p-scroll');
+  wrap.appendChild(sec('アップデート'));
+  const upd = h('button', 'pbtn primary', '更新を確認');
+  upd.addEventListener('click', () => { K.send('k:ov-close'); setTimeout(() => K.send('k:cmd', 'app.update'), 30); });
+  wrap.appendChild(row(`Hizashi v${cfg.version || ''}`, 'GitHub で新しい版を探して、あれば更新します（このボタンを押したときだけ通信します）', upd));
+
   wrap.appendChild(sec('一般'));
   wrap.appendChild(row('起動時に前回のタブを復元', 'タブは休止状態で復元されるので軽く起動します', toggle(cfg, 'restoreSession')));
   wrap.appendChild(row('検索エンジン', 'アドレスバーの検索に使います', select(cfg, 'searchEngine', cfg.engines.map((e) => [e.id, e.name]))));

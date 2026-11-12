@@ -194,9 +194,24 @@ function makeTab(t) {
   return tab;
 }
 
+let lastActiveTab = null;
 function renderTabs() {
   el.tabs.replaceChildren(...S.tabs.map(makeTab));
+  // タブが多いときも、選んだタブが見える位置までスクロールする
+  if (S.activeId !== lastActiveTab) {
+    lastActiveTab = S.activeId;
+    const a = el.tabs.querySelector('.tab.active');
+    if (a) a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
 }
+
+// 横タブ: マウスホイールで左右にスクロール
+$('tabs-slot-top').addEventListener('wheel', (e) => {
+  if (!S || S.settings.tabLayout === 'side') return;
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  e.currentTarget.scrollLeft += d;
+  e.preventDefault();
+}, { passive: false });
 
 function renderToolbar() {
   const i = S.info;

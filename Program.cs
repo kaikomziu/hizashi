@@ -21,6 +21,14 @@ static class Program
         var script = selfTest && st + 1 < args.Length ? args[st + 1] : null;
         var dev = args.Contains("--dev");
 
+        // 更新で再起動されたときは、更新前のプロセスが終わるまで待つ（多重起動の判定に引っかからないように）
+        var ra = Array.IndexOf(args, "--restart-after");
+        if (ra >= 0 && ra + 1 < args.Length && int.TryParse(args[ra + 1], out var oldPid))
+        {
+            try { System.Diagnostics.Process.GetProcessById(oldPid).WaitForExit(15000); } catch { /* すでに終了している */ }
+        }
+        Updater.CleanupOld();
+
         // 多重起動の防止（2つ目はURLを渡して終了する）
         using var mutex = new Mutex(true, "Hizashi.WV2.SingleInstance", out var first);
         if (!first && !selfTest)

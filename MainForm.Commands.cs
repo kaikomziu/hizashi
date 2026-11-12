@@ -147,6 +147,7 @@ public partial class MainForm
             Toast("履歴を削除しました");
         }));
         Cmd("app.shortcut", "デスクトップとスタートメニューにショートカットを作る", "", () => CreateShortcuts());
+        Cmd("app.update", "更新を確認（GitHub）", "", CheckForUpdate);
         Cmd("app.about", "Hizashi について", "", ShowAbout);
         Cmd("app.quit", "Hizashi を終了", "Ctrl+Shift+Q", Close);
 

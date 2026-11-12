@@ -92,7 +92,7 @@ partial class MainForm
         var lines = (body ?? "").Replace("\r", "").Split('\n')
             .Select(l => l.Trim())
             .Where(l => l.StartsWith("- ") || l.StartsWith("* "))
-            .Select(l => "・" + l[2..].Replace("`", ""))
+            .Select(l => "・" + l[2..].Replace("`", "").Replace("**", ""))
             .Take(6)
             .ToList();
         return lines.Count == 0 ? "" : "更新の内容:\n" + string.Join("\n", lines.Select(l => l.Length > 70 ? l[..70] + "…" : l));

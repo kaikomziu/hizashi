@@ -225,13 +225,39 @@ public partial class MainForm
         ScheduleState();
     }
 
+    // タブが使うプロファイルのデータを消す（Hizashi 自身の画面は別プロファイルなので、chrome のものではない）
+    internal async Task ClearProfileData(CoreWebView2BrowsingDataKinds? kinds)
+    {
+        var profile = ExtProfile() ?? throw new InvalidOperationException("ブラウザの準備ができていません");
+        if (kinds == null) await profile.ClearBrowsingDataAsync();
+        else await profile.ClearBrowsingDataAsync(kinds.Value);
+    }
+
     internal async Task ClearBrowsingData()
     {
-        if (!await AskConfirm("Cookie・キャッシュなどの閲覧データを削除します。\n（ログイン状態も解除されます）")) return;
-        var core = chrome.CoreWebView2;
-        await core.Profile.ClearBrowsingDataAsync();
+        if (!await AskConfirm("Cookie・キャッシュ・保存したパスワードなど、閲覧データをすべて削除します。\n（ログイン状態も解除されます。履歴・ブックマーク・メモは消えません）")) return;
+        await ClearProfileData(null);
         Toast("閲覧データを削除しました");
         ActiveTab?.Core?.Reload();
+    }
+
+    internal async Task ClearSavedPasswords()
+    {
+        if (!await AskConfirm("保存したパスワードと、フォームの自動入力の情報を削除します。")) return;
+        await ClearProfileData(CoreWebView2BrowsingDataKinds.PasswordAutosave | CoreWebView2BrowsingDataKinds.GeneralAutofill);
+        Toast("保存したパスワードと自動入力の情報を削除しました");
+    }
+
+    // パスワードの保存・自動入力の設定を、開いているタブに反映する
+    void ApplyPasswordSetting()
+    {
+        foreach (var t in tabs)
+        {
+            var st = t.Core?.Settings;
+            if (st == null) continue;
+            st.IsPasswordAutosaveEnabled = S.PasswordSave;
+            st.IsGeneralAutofillEnabled = S.PasswordSave;
+        }
     }
 
     internal void AddSelectionToNote(string text, Tab tab)

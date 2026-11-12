@@ -683,6 +683,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         await TestTabScroll(bs);
         await TestUpdater();
         await TestExtensions(bs);
+        await TestPasswordsAndClear(bs);
 
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
@@ -1083,6 +1084,39 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
             }
             catch (Exception e) { Check("（通信あり）ウェブストアから拡張機能を取得して追加できる", false, e.Message); }
         }
+    }
+
+
+    // ---------------------------------------------------------------- パスワード・閲覧データの削除
+    async Task TestPasswordsAndClear(string baseUrl)
+    {
+        var anyTab = tabs.First(x => x.Core != null);
+        Check("タブでは、パスワードの保存と自動入力がオン", anyTab.Core.Settings.IsPasswordAutosaveEnabled && anyTab.Core.Settings.IsGeneralAutofillEnabled);
+        Check("Hizashi 自身の画面（外枠）では、パスワードの保存・自動入力はオフ",
+            !chrome.CoreWebView2.Settings.IsPasswordAutosaveEnabled && !chrome.CoreWebView2.Settings.IsGeneralAutofillEnabled);
+        SetSetting("passwordSave", JsonDocument.Parse("false").RootElement);
+        Check("設定でオフにすると、開いているタブにすぐ反映される", !S.PasswordSave && tabs.Where(x => x.Core != null).All(x => !x.Core.Settings.IsPasswordAutosaveEnabled && !x.Core.Settings.IsGeneralAutofillEnabled));
+        SetSetting("passwordSave", JsonDocument.Parse("true").RootElement);
+        Check("オンに戻すと、また有効になる", S.PasswordSave && anyTab.Core.Settings.IsPasswordAutosaveEnabled);
+        Check("「保存したパスワードを削除」のコマンドがある", commands.Any(c => c.Id == "data.clearPasswords"));
+
+        // 閲覧データの削除は、タブ側のプロファイル（Cookie など）に効く
+        var p = CreateTab($"{baseUrl}/p?t=clear");
+        await WaitLoad(p);
+        await JS(p, "document.cookie = 'hzclear=1; path=/'; 1");
+        var before = await JS(p, "document.cookie");
+        var bm = Bookmarks.Count;
+        await ClearProfileData(null);
+        p.Core.Reload();
+        await Sleep(1200);
+        await WaitLoad(p);
+        var after = await JS(p, "document.cookie");
+        Check("閲覧データの削除で、タブ側の Cookie が消える", before.Contains("hzclear=1") && !after.Contains("hzclear"), $"before={before} after={after}");
+        Check("閲覧データを削除しても、ブックマークや拡張機能は残る", Bookmarks.Count == bm && extItems.Any(x => x.Name == "Hizashi Test Ext"));
+        var okPw = true;
+        try { await ClearProfileData(CoreWebView2BrowsingDataKinds.PasswordAutosave | CoreWebView2BrowsingDataKinds.GeneralAutofill); } catch { okPw = false; }
+        Check("保存したパスワード・自動入力の情報だけを削除できる", okPw);
+        CloseTab(p.Id, true);
     }
 
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット

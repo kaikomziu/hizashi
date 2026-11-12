@@ -137,7 +137,8 @@ public partial class MainForm
         Cmd("set.forceDark", "全サイト強制ダークモード ON / OFF", "", Toggle("全サイト強制ダーク", () => S.ForceDark, v => S.ForceDark = v));
 
         // データ・アプリ
-        Cmd("data.clear", "閲覧データ（Cookie・キャッシュ）を削除", "", () => Fire(ClearBrowsingData));
+        Cmd("data.clear", "閲覧データ（Cookie・キャッシュ・保存したパスワードなど）を削除", "", () => Fire(ClearBrowsingData));
+        Cmd("data.clearPasswords", "保存したパスワード・自動入力の情報を削除", "", () => Fire(ClearSavedPasswords));
         Cmd("data.clearHistory", "履歴をすべて削除", "", () => Fire(async () =>
         {
             if (!await AskConfirm("閲覧履歴をすべて削除します。")) return;
@@ -179,6 +180,7 @@ public partial class MainForm
         ApplyOpacityAndTop();
         if (key == null || key == "forceDark")
             foreach (var t in tabs) if (t.View != null) _ = ApplyPageStyles(t);
+        if (key == null || key.Equals("passwordSave", StringComparison.OrdinalIgnoreCase)) ApplyPasswordSetting();
         ScheduleState();
     }
 

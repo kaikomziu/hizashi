@@ -20,7 +20,7 @@ function Inline([string]$s) {   # `code` と **強調** だけを変換する簡
 # ---------------------------------------------------------------- 値の読み取り
 $version = [regex]::Match((Read "$root\Hizashi.csproj"), '<Version>([^<]+)</Version>').Groups[1].Value
 # Android 版（別リポジトリ kaikomziu/hizashi-android）の最新版。新しい版を出したらここを更新する
-$androidVersion = '0.2.0'
+$androidVersion = '0.3.0'
 # 最新版の公開日は CHANGELOG の見出し「## [x.y.z] - YYYY-MM-DD」から読む
 $dm = [regex]::Match((Read "$root\CHANGELOG.md"), '(?m)^## \[[^\]]+\] - (\d{4})-(\d{2})-(\d{2})')
 $releaseDate = if ($dm.Success) { '{0}年{1}月{2}日' -f $dm.Groups[1].Value, [int]$dm.Groups[2].Value, [int]$dm.Groups[3].Value } else { '' }

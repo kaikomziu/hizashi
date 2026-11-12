@@ -21,6 +21,7 @@ public class WinBounds
 public class Settings
 {
     public bool Adblock { get; set; } = true;
+    public bool PasswordSave { get; set; } = true; // パスワードの保存・フォームの自動入力（この PC の中だけ）
     public bool HttpsUpgrade { get; set; } = true;
     public bool StripTracking { get; set; } = true;
     public bool RestoreSession { get; set; } = true;

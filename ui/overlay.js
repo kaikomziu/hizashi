@@ -466,6 +466,7 @@ function renderSettings(cfg, fresh) {
   wrap.appendChild(sec('プライバシー'));
   wrap.appendChild(row('広告・トラッカーをブロック', '主要な広告配信・計測ドメインへの通信を遮断', toggle(cfg, 'adblock')));
   wrap.appendChild(row('HTTPSへ自動アップグレード', 'http:// を https:// に切り替え。非対応サイトは自動でHTTPに戻します', toggle(cfg, 'httpsUpgrade')));
+  wrap.appendChild(row('パスワードとフォーム入力を保存・自動入力', 'この PC の中だけに保存します（Edge と同じ仕組み）。Google パスワードマネージャーとは同期しません。保存したものの削除は、パレットの「保存したパスワード…を削除」から', toggle(cfg, 'passwordSave')));
   wrap.appendChild(row('追跡パラメータを自動で除去', 'utm_* / fbclid / gclid などをURLから取り除きます', toggle(cfg, 'stripTracking')));
 
   wrap.appendChild(sec('パフォーマンス'));

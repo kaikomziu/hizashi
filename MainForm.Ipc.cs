@@ -88,6 +88,7 @@ public partial class MainForm
                 return new
                 {
                     adblock = S.Adblock,
+                    passwordSave = S.PasswordSave,
                     httpsUpgrade = S.HttpsUpgrade,
                     stripTracking = S.StripTracking,
                     restoreSession = S.RestoreSession,

@@ -66,8 +66,8 @@ public partial class MainForm
         st.AreDevToolsEnabled = true;
         st.IsZoomControlEnabled = true;
         st.IsStatusBarEnabled = true;
-        st.IsPasswordAutosaveEnabled = true;
-        st.IsGeneralAutofillEnabled = true;
+        st.IsPasswordAutosaveEnabled = S.PasswordSave;
+        st.IsGeneralAutofillEnabled = S.PasswordSave;
         MapUiHost(core);
 
         await core.AddScriptToExecuteOnDocumentCreatedAsync(PageScripts.TabBridgeJs);

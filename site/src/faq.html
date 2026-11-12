@@ -11,7 +11,7 @@
     <details id="what" open><summary>Hizashi とは何ですか？</summary>
       <p>Windows 用のブラウザです。ページを表示する部分は Microsoft Edge と同じ Chromium（WebView2）で、その上に、コマンドパレット・ワークスペース・縦タブ・分割表示・集中モード・リーダーモードなどの機能を載せた、個人開発のブラウザです。</p></details>
     <details><summary>Chrome や Edge との違いは何ですか？</summary>
-      <p>ページの表示や、Web の互換性は、ほぼ同じです（同じ Chromium を使うため）。違うのは周りの機能です。キーボードで操作しやすくする工夫（パレット）、タブの整理（ワークスペース・縦タブ・分割）、集中のための機能などを中心に作っています。逆に、Chrome にある拡張機能・アカウント同期・シークレットウィンドウなどはありません。</p></details>
+      <p>ページの表示や、Web の互換性は、ほぼ同じです（同じ Chromium を使うため）。違うのは周りの機能です。キーボードで操作しやすくする工夫（パレット）、タブの整理（ワークスペース・縦タブ・分割）、集中のための機能などを中心に作っています。逆に、Chrome にあるアカウント同期・シークレットウィンドウなどはありません（拡張機能は一部だけ動きます）。</p></details>
     <details><summary>無料ですか？ 広告は出ますか？</summary>
       <p>無料です。広告は出ません。ライセンスは MIT で、商用利用や改造も自由です。</p></details>
     <details><summary>なぜ作ったのですか？</summary>
@@ -31,8 +31,9 @@
       <p>署名がなく、数の少ないプログラムは、誤検知されることがあります。<a href="download.html#sha">SHA-256</a>が一致していることを確認した上で、不安な場合は使わないでください。誤検知が続くようなら、<a href="https://github.com/kaikomziu/hizashi/issues">Issues</a>で教えてもらえると助かります。</p></details>
 
     <h2>機能</h2>
-    <details><summary>Chrome の拡張機能は使えますか？</summary>
-      <p>使えません。ブラウザエンジンとして使っている WebView2 が、拡張機能に対応していないためです。広告ブロックなど、よく使われる機能は Hizashi に最初から入れています。</p></details>
+    <details id="extensions"><summary>Chrome の拡張機能は使えますか？</summary>
+      <p><strong>Windows 版は、一部が使えます。</strong>「拡張機能」パネルに Chrome ウェブストアの URL を貼って追加できます（ストアのページに出る「Hizashi に追加」ボタンでも追加できます）。ただし、WebView2 に組み込まれた拡張機能の仕組みは Chrome より機能が少なく、動かない拡張機能もあります。ページの見た目を変えるもの、広告・通信のブロック、ページ内の便利機能は動くことが多く、ツールバーのボタンが前提のもの、タブやウィンドウを細かく操作するもの、旧式の Manifest V2 の拡張機能は、動かないことがあります。詳しくは<a href="features.html#extensions">特長のページ</a>を見てください。</p>
+      <p><strong>Android 版は、拡張機能に対応していません。</strong>表示に使っている Android の WebView が、拡張機能に対応していないためです。</p></details>
     <details><summary>広告ブロックは、uBlock Origin のように強力ですか？</summary>
       <p>いいえ。Hizashi の広告ブロックは、広告・計測を行う約{{BLOCK_COUNT}}件のドメインへの通信を止めるだけの、単純な仕組みです。サイト自身が配信する広告（YouTube の動画広告など）は止められません。強力なブロックがほしい人には向いていません。</p></details>
     <details><summary>Google アカウントでログインできますか？</summary>

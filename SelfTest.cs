@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -681,6 +682,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
 
         await TestTabScroll(bs);
         await TestUpdater();
+        await TestExtensions(bs);
 
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
@@ -847,6 +849,240 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         var api = typeof(Updater).GetProperty("ApiUrl", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.GetValue(null) as string;
         Check("通常時の問い合わせ先は kaikomziu/hizashi の releases/latest", api == "https://api.github.com/repos/kaikomziu/hizashi/releases/latest", api);
         Check("「更新を確認」コマンドがある", commands.Any(c => c.Id == "app.update"));
+    }
+
+
+    // ---------------------------------------------------------------- 拡張機能
+    static string WriteTestExtension(string dir, string name, string version = "1.2.3")
+    {
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "manifest.json"), JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["manifest_version"] = 3,
+            ["name"] = name,
+            ["version"] = version,
+            ["description"] = "Hizashi の自動テスト用",
+            ["permissions"] = new[] { "storage", "tabs" },
+            ["host_permissions"] = new[] { "http://127.0.0.1/*" },
+            ["content_scripts"] = new[] { new Dictionary<string, object> { ["matches"] = new[] { "http://127.0.0.1/*", "https://hizashi.invalid/*" }, ["js"] = new[] { "cs.js" }, ["run_at"] = "document_start" } },
+            ["action"] = new Dictionary<string, object> { ["default_popup"] = "popup.html" },
+            ["options_page"] = "options.html",
+        }));
+        File.WriteAllText(Path.Combine(dir, "cs.js"), "document.documentElement.setAttribute('data-hz-ext', '1');");
+        File.WriteAllText(Path.Combine(dir, "popup.html"), "<!doctype html><title>HZ-POPUP</title><body>popup</body>");
+        File.WriteAllText(Path.Combine(dir, "options.html"), "<!doctype html><title>HZ-OPTIONS</title><body>options</body>");
+        return dir;
+    }
+
+    static void PutProtoBytes(MemoryStream ms, int field, byte[] data)
+    {
+        void Varint(ulong v) { while (v >= 0x80) { ms.WriteByte((byte)(v | 0x80)); v >>= 7; } ms.WriteByte((byte)v); }
+        Varint((ulong)((field << 3) | 2));
+        Varint((ulong)data.Length);
+        ms.Write(data);
+    }
+
+    // 本物の CRX3 と同じ作りのファイル（ヘッダー + zip）を作る
+    static (byte[] crx, byte[] pub) BuildCrx3(byte[] zip)
+    {
+        using var rsa = System.Security.Cryptography.RSA.Create(2048);
+        var pub = rsa.ExportSubjectPublicKeyInfo();
+        var crxId = System.Security.Cryptography.SHA256.HashData(pub)[..16];
+        var proof = new MemoryStream();
+        PutProtoBytes(proof, 1, pub);
+        PutProtoBytes(proof, 2, new byte[256]);
+        var signed = new MemoryStream();
+        PutProtoBytes(signed, 1, crxId);
+        var header = new MemoryStream();
+        PutProtoBytes(header, 2, proof.ToArray());
+        PutProtoBytes(header, 10000, signed.ToArray());
+        var h = header.ToArray();
+        var ms = new MemoryStream();
+        ms.Write(Encoding.ASCII.GetBytes("Cr24"));
+        ms.Write(BitConverter.GetBytes(3u));
+        ms.Write(BitConverter.GetBytes((uint)h.Length));
+        ms.Write(h);
+        ms.Write(zip);
+        return (ms.ToArray(), pub);
+    }
+
+    async Task ClickPromptOk()
+    {
+        for (int i = 0; i < 50 && overlayMode != "prompt"; i++) await Sleep(100);
+        await Sleep(200);
+        await UiJs(overlayView, "document.getElementById('pr-ok').click(); 1");
+    }
+
+    async Task TestExtensions(string baseUrl)
+    {
+        var src = Path.Combine(testOut, "ext-src");
+        try { Directory.Delete(src, true); } catch { }
+        var dirA = WriteTestExtension(Path.Combine(src, "a"), "Hizashi Test Ext");
+
+        // --- ID の読み取り・CRX の解析（通信なし）
+        const string sampleId = "eimadpbcbfnmbkopoojfekhnkhdbieeh";
+        Check("拡張機能の ID だけでも読み取れる", ExtensionPackage.ParseId(sampleId) == sampleId);
+        Check("ストアの URL（新旧どちらも）から ID を読み取れる",
+            ExtensionPackage.ParseId($"https://chromewebstore.google.com/detail/dark-reader/{sampleId}?hl=ja") == sampleId &&
+            ExtensionPackage.ParseId($"https://chrome.google.com/webstore/detail/dark-reader/{sampleId}") == sampleId);
+        Check("ストア以外の URL・不正な ID は受け付けない",
+            ExtensionPackage.ParseId($"https://evil.example/detail/x/{sampleId}") == null && ExtensionPackage.ParseId("abc") == null && ExtensionPackage.ParseId("") == null);
+        Check("ストアの商品ページかどうかを判定できる",
+            ExtensionPackage.IsStoreUrl($"https://chromewebstore.google.com/detail/x/{sampleId}") && !ExtensionPackage.IsStoreUrl("https://example.com/detail/x"));
+
+        var zipPath = Path.Combine(testOut, "ext-a.zip");
+        try { File.Delete(zipPath); } catch { }
+        System.IO.Compression.ZipFile.CreateFromDirectory(dirA, zipPath);
+        var zipBytes = File.ReadAllBytes(zipPath);
+        var (crx, pub) = BuildCrx3(zipBytes);
+        var parsed = ExtensionPackage.ParseCrx(crx);
+        Check("CRX3 のヘッダーから zip と公開鍵を取り出せる", parsed.Zip.SequenceEqual(zipBytes) && parsed.PublicKey != null && parsed.PublicKey.SequenceEqual(pub));
+        Check("普通の zip もそのまま扱える", ExtensionPackage.ParseCrx(zipBytes).Zip.SequenceEqual(zipBytes));
+        var bad = false;
+        try { ExtensionPackage.ParseCrx(Encoding.ASCII.GetBytes("これは拡張機能ではありません")); } catch (InvalidDataException) { bad = true; }
+        Check("拡張機能でないファイルは受け付けない", bad);
+
+        var work = Path.Combine(testOut, "ext-work");
+        var prep = ExtensionPackage.Prepare(parsed.Zip, parsed.PublicKey, work);
+        var expectId = ExtensionPackage.IdFromKey(pub);
+        Check("鍵から拡張機能の ID を求められる（32文字の a〜p）", System.Text.RegularExpressions.Regex.IsMatch(expectId, "^[a-p]{32}$") && prep.KeyId == expectId, prep.KeyId);
+        Check("manifest に鍵が書き足される（ストアと同じ ID になる）", File.ReadAllText(Path.Combine(work, "manifest.json")).Contains("\"key\""));
+        Check("拡張機能の名前・版数・権限の要約を読める", prep.Name == "Hizashi Test Ext" && prep.Version == "1.2.3" && prep.Permissions.Any(x => x.Contains("タブ")) && !prep.AllSites,
+            string.Join(" / ", prep.Permissions));
+        try { Directory.Delete(work, true); } catch { }
+
+        // 「_metadata」フォルダは消す。フォルダの外へ書き出す zip は拒否する
+        var metaZip = new MemoryStream();
+        using (var za = new System.IO.Compression.ZipArchive(metaZip, System.IO.Compression.ZipArchiveMode.Create, true))
+        {
+            foreach (var f in Directory.GetFiles(dirA)) za.CreateEntryFromFile(f, Path.GetFileName(f));
+            using var w = new StreamWriter(za.CreateEntry("_metadata/verified_contents.json").Open()); w.Write("{}");
+        }
+        var prep2 = ExtensionPackage.Prepare(metaZip.ToArray(), null, work);
+        Check("「_metadata」フォルダは取り除く", !Directory.Exists(Path.Combine(work, "_metadata")) && prep2.KeyId == null);
+        try { Directory.Delete(work, true); } catch { }
+
+        var evilZip = new MemoryStream();
+        using (var za = new System.IO.Compression.ZipArchive(evilZip, System.IO.Compression.ZipArchiveMode.Create, true))
+        {
+            za.CreateEntryFromFile(Path.Combine(dirA, "manifest.json"), "manifest.json");
+            using var w = new StreamWriter(za.CreateEntry("../evil-from-zip.txt").Open()); w.Write("x");
+        }
+        var blocked = false;
+        try { ExtensionPackage.Prepare(evilZip.ToArray(), null, work); } catch { blocked = true; }
+        Check("フォルダの外へ書き出す zip は拒否する", blocked && !File.Exists(Path.Combine(testOut, "evil-from-zip.txt")));
+        try { Directory.Delete(work, true); } catch { }
+
+        var allZip = new MemoryStream();
+        using (var za = new System.IO.Compression.ZipArchive(allZip, System.IO.Compression.ZipArchiveMode.Create, true))
+        {
+            using var w = new StreamWriter(za.CreateEntry("manifest.json").Open());
+            w.Write("{\"manifest_version\":2,\"name\":\"全サイト\",\"version\":\"1\",\"permissions\":[\"<all_urls>\",\"cookies\"]}");
+        }
+        var prep3 = ExtensionPackage.Prepare(allZip.ToArray(), null, work);
+        Check("全サイトに触れる拡張機能は、権限の要約でそう表示される", prep3.AllSites && prep3.Permissions.Any(x => x.Contains("すべてのサイト")) && prep3.Permissions.Any(x => x.Contains("Cookie")), string.Join(" / ", prep3.Permissions));
+        try { Directory.Delete(work, true); } catch { }
+
+        // --- 実際に WebView2 へ読み込む
+        Check("起動時に拡張機能が使える状態になっている", ExtProfile() != null);
+        await ExtAddFromPathAsync(dirA, true, confirm: false);
+        var item = extItems.FirstOrDefault(x => x.Name == "Hizashi Test Ext");
+        Check("フォルダから拡張機能を追加できる", item != null && item.Enabled && item.Version == "1.2.3" && item.HasPopup && item.HasOptions,
+            string.Join(",", extItems.Select(x => x.Name)));
+        if (item == null) return;
+
+        var page = CreateTab($"{baseUrl}/p?t=ext");
+        Check("拡張機能のコンテンツスクリプトがページで動く", await WaitLoad(page) && await JS(page, "document.documentElement.getAttribute('data-hz-ext')") == "1");
+
+        var nt = CreateTab(NewtabUrl);
+        await WaitLoad(nt);
+        Check("Hizashi 自身の画面（外枠・オーバーレイ）には、拡張機能が入り込まない",
+            await UiJs(chrome, "String(document.documentElement.getAttribute('data-hz-ext'))") == "null" &&
+            await UiJs(overlayView, "String(document.documentElement.getAttribute('data-hz-ext'))") == "null" &&
+            await UiJs(chrome, "location.origin") == "https://hizashi.invalid",
+            "（同じ https://hizashi.invalid でも、タブの中のページには入る: " + await JS(nt, "String(document.documentElement.getAttribute('data-hz-ext'))") + "）");
+        CloseTab(nt.Id, true);
+
+        // ポップアップ・設定ページ
+        ExtOpenPage(item.Id, false);
+        await Sleep(500);
+        var pop = ActiveTab;
+        var okPop = pop != null && pop.Url.StartsWith("chrome-extension://" + item.Id) && await WaitLoad(pop) && await JS(pop, "document.title") == "HZ-POPUP";
+        Check("拡張機能のポップアップをタブで開ける", okPop, pop?.Url);
+        if (pop != null) CloseTab(pop.Id, true);
+        ExtOpenPage(item.Id, true);
+        await Sleep(500);
+        var opt = ActiveTab;
+        Check("拡張機能の設定ページをタブで開ける", opt != null && await WaitLoad(opt) && await JS(opt, "document.title") == "HZ-OPTIONS", opt?.Url);
+        if (opt != null) CloseTab(opt.Id, true);
+
+        // 無効 → 有効
+        await ExtToggleAsync(item.Id, false);
+        var p2 = CreateTab($"{baseUrl}/p?t=ext2");
+        await WaitLoad(p2);
+        var offVal = await JS(p2, "String(document.documentElement.getAttribute('data-hz-ext'))");
+        Check("無効にすると、コンテンツスクリプトが動かなくなる", offVal == "null" && !extItems.First(x => x.Id == item.Id).Enabled, offVal);
+        await ExtToggleAsync(item.Id, true);
+        p2.Core.Reload();
+        await Sleep(1500);
+        await WaitLoad(p2);
+        Check("有効に戻すと、また動く", await JS(p2, "document.documentElement.getAttribute('data-hz-ext')") == "1" && extItems.First(x => x.Id == item.Id).Enabled);
+        CloseTab(p2.Id, true);
+        CloseTab(page.Id, true);
+
+        // 削除（確認画面で「削除する」を押す）
+        var dirB = WriteTestExtension(Path.Combine(src, "b"), "Hizashi Test Ext B");
+        await ExtAddFromPathAsync(dirB, true, confirm: false);
+        var itemB = extItems.FirstOrDefault(x => x.Name == "Hizashi Test Ext B");
+        var folderB = itemB != null ? Path.Combine(ExtDir, extIndex[itemB.Id].Folder) : null;
+        Check("ほかの拡張機能も追加でき、一覧に並ぶ", itemB != null && extItems.Count >= 2 && Directory.Exists(folderB));
+        // 追加が終わると、拡張機能のパネルは自動で開き直される（確認画面で閉じたあとの復帰）
+        Check("追加が終わると、拡張機能のパネルが開き直される", overlayMode == "panel" && panelName == "extensions", $"mode={overlayMode} panel={panelName}");
+        if (!(overlayMode == "panel" && panelName == "extensions")) OpenPanel("extensions");
+        await Sleep(1200);
+        Check("パネル「extensions」が開く", overlayMode == "panel" && panelName == "extensions");
+        await Shot(overlayView.CoreWebView2, "17-panel-extensions");
+        HideOverlay(false);
+        if (itemB != null)
+        {
+            var rm = ExtRemoveAsync(itemB.Id);
+            await ClickPromptOk();
+            await rm;
+            Check("拡張機能を削除すると、一覧とフォルダから消える", extItems.All(x => x.Id != itemB.Id) && !Directory.Exists(folderB) && extItems.Any(x => x.Id == item.Id));
+        }
+
+        // ストアのページに出すボタン
+        Check("Edge に組み込みの拡張機能（PDF ビューアーなど）は、一覧に出さない", extItems.All(x => extIndex.ContainsKey(x.Id)) && extItems.All(x => !x.Name.Contains("PDF")));
+        var sp = CreateTab($"{baseUrl}/p?t=store");
+        await WaitLoad(sp);
+        await sp.Core.ExecuteScriptAsync(ExtensionPackage.StoreButtonJs);
+        Check("ストアのページに出す「Hizashi に追加」ボタンを差し込める", await JS(sp, "String(!!document.getElementById('hizashi-ext-btn'))") == "true");
+        await JS(sp, "document.getElementById('hizashi-ext-btn').click(); 1");
+        await Sleep(800);
+        Check("ストア以外のページからの追加要求は無視する", overlayMode != "prompt" && !extBusy);
+        CloseTab(sp.Id, true);
+        Check("ストアかどうかはホスト名で判定する（似た名前のサイトは対象外）",
+            ExtensionPackage.IsStoreHost("chromewebstore.google.com") && !ExtensionPackage.IsStoreHost("chromewebstore.google.com.evil.example") && !ExtensionPackage.IsStoreHost("evil.example"));
+
+        // 実際のウェブストアから取得（HIZASHI_TEST_NET=1 のときだけ）
+        if (Environment.GetEnvironmentVariable("HIZASHI_TEST_NET") == "1")
+        {
+            try
+            {
+                var add = ExtAddFromStoreAsync($"https://chromewebstore.google.com/detail/dark-reader/{sampleId}");
+                await ClickPromptOk();
+                await add.WaitAsync(TimeSpan.FromSeconds(90));
+                var dr = extItems.FirstOrDefault(x => x.Id == sampleId);
+                Check("（通信あり）ウェブストアから拡張機能を取得して追加できる（ID がストアと同じ）", dr != null && dr.FromStore, string.Join(",", extItems.Select(x => x.Name + ":" + x.Id[..6])));
+                if (dr != null)
+                {
+                    var rm = ExtRemoveAsync(dr.Id);
+                    await ClickPromptOk();
+                    await rm;
+                }
+            }
+            catch (Exception e) { Check("（通信あり）ウェブストアから拡張機能を取得して追加できる", false, e.Message); }
+        }
     }
 
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット
@@ -1023,6 +1259,11 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         Check("ブックマークが保存されている", Bookmarks.Count >= 5, $"count={Bookmarks.Count}");
         Check("履歴が保存されている", History.Count >= 3, $"count={History.Count}");
         Check("サイトごとの設定が保存されている", Sites.Zoom != null && Sites.Dark.Count >= 1);
+        Check("追加した拡張機能が、再起動後も入っている", extItems.Any(x => x.Name == "Hizashi Test Ext" && x.Enabled), string.Join(",", extItems.Select(x => x.Name)));
+        var ntab = CreateTab(NewtabUrl);
+        await WaitLoad(ntab);
+        Check("再起動後も、拡張機能のコンテンツスクリプトが動く", await JS(ntab, "document.documentElement.getAttribute('data-hz-ext')") == "1");
+        CloseTab(ntab.Id, true);
         var slept = tabs.FirstOrDefault(t => t.View == null && Util.IsHttp(t.Url));
         if (slept != null)
         {

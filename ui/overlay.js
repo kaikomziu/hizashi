@@ -178,7 +178,7 @@ L.prompt.addEventListener('mousedown', (e) => { if (e.target === L.prompt) submi
 // ===========================================================================
 const PANELS = [
   ['history', '履歴'], ['downloads', 'ダウンロード'], ['bookmarks', 'ブックマーク'],
-  ['notes', 'メモ'], ['settings', '設定'], ['help', 'ヘルプ'],
+  ['notes', 'メモ'], ['extensions', '拡張機能'], ['settings', '設定'], ['help', 'ヘルプ'],
 ];
 const body = $('panel-body');
 let curPanel = 'history';
@@ -217,7 +217,7 @@ async function renderPanel() {
   if (fresh) { body.replaceChildren(); shellFor = name; }
   const data = await K.invoke('k:panel-data', name, search[name] || '');
   if (curPanel !== name) return;
-  ({ history: renderHistory, downloads: renderDownloads, bookmarks: renderBookmarks, notes: renderNotes, settings: renderSettings, help: renderHelp })[name](data, fresh);
+  ({ history: renderHistory, downloads: renderDownloads, bookmarks: renderBookmarks, notes: renderNotes, extensions: renderExtensions, settings: renderSettings, help: renderHelp })[name](data, fresh);
 }
 
 // 検索ボックス付きの共通の骨組み
@@ -503,6 +503,59 @@ function renderSettings(cfg, fresh) {
   for (const b of cfg.bangs) { const c = h('span', 'chip'); c.innerHTML = `<b>${b}</b>`; chips.appendChild(c); }
   wrap.appendChild(chips);
   body.replaceChildren(wrap);
+}
+
+// ---------- 拡張機能 ----------
+let extInput = '';
+function renderExtensions(d, fresh) {
+  if (fresh) {
+    const wrap = h('div', 'p-scroll');
+    wrap.appendChild(sec('Chrome ウェブストアから追加'));
+    wrap.appendChild(h('div', 'hint', 'ウェブストアの拡張機能のページを開いて、その URL（または32文字の ID）を貼り付けて「追加」を押します。ストアのページを開いているときは、パレットの「このページの拡張機能を追加」でも追加できます。'));
+    const box = h('div', 'ext-add');
+    const inp = h('input', 'p-search');
+    inp.placeholder = 'https://chromewebstore.google.com/detail/…  または ID';
+    inp.value = extInput;
+    inp.addEventListener('input', () => { extInput = inp.value; });
+    const go = h('button', 'pbtn primary', '追加');
+    const submit = () => { const v = inp.value.trim(); if (v) { K.send('k:ext-add', v); extInput = ''; inp.value = ''; } };
+    go.addEventListener('click', submit);
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) submit(); });
+    box.append(inp, go);
+    wrap.appendChild(box);
+    const files = h('div', 'ext-add');
+    const f1 = h('button', 'pbtn', 'ファイル（.crx / .zip）から追加');
+    f1.addEventListener('click', () => K.send('k:ext-add-file'));
+    const f2 = h('button', 'pbtn', 'フォルダから追加');
+    f2.addEventListener('click', () => K.send('k:ext-add-folder'));
+    files.append(f1, f2);
+    wrap.appendChild(files);
+    wrap.appendChild(sec('入っている拡張機能'));
+    wrap.appendChild(h('div', 'ext-list'));
+    wrap.appendChild(h('div', 'hint ext-note',
+      '※ Hizashi は Chrome そのものではないため、拡張機能は一部しか動きません（ページの見た目を変えるもの、広告・通信のブロック、メモやパスワード以外の便利機能など）。ブラウザのタブやウィンドウを細かく操作するものは、動かないことがあります。'));
+    body.replaceChildren(wrap);
+  }
+  const list = body.querySelector('.ext-list');
+  if (!list) return;
+  list.replaceChildren();
+  if (d.busy) list.appendChild(h('div', 'hint', '処理しています…'));
+  if (!d.items.length && !d.busy) list.appendChild(h('div', 'hint', 'まだ追加されていません。'));
+  for (const e of d.items) {
+    const r = h('div', 'ext-item' + (e.enabled ? '' : ' off'));
+    const lb = h('div', 'lb');
+    lb.appendChild(h('b', '', e.name));
+    lb.appendChild(h('small', '', `${e.version ? 'v' + e.version + ' ・ ' : ''}${e.fromStore ? 'Chrome ウェブストア' : '手元のファイル'} ・ ${e.id.slice(0, 8)}…`));
+    const acts = h('div', 'ext-acts');
+    const btn = (label, fn, cls) => { const b = h('button', 'pbtn' + (cls ? ' ' + cls : ''), label); b.addEventListener('click', fn); acts.appendChild(b); };
+    btn(e.enabled ? '有効' : '無効', () => K.send('k:ext-toggle', { id: e.id, enabled: !e.enabled }), e.enabled ? 'primary' : '');
+    if (e.hasPopup) btn('開く', () => K.send('k:ext-popup', e.id));
+    if (e.hasOptions) btn('設定', () => K.send('k:ext-options', e.id));
+    if (e.fromStore) btn('更新', () => K.send('k:ext-update', e.id));
+    btn('削除', () => K.send('k:ext-remove', e.id), 'danger');
+    r.append(lb, acts);
+    list.appendChild(r);
+  }
 }
 
 // ---------- ヘルプ ----------

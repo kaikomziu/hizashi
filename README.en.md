@@ -60,7 +60,7 @@ Press `Ctrl+K` after launch — most things are reachable from the command palet
 
 ## Limitations
 
-- **No browser extensions.**
+- **Browser extensions work only partly.** You can add Chrome Web Store extensions from the Extensions panel, but some do not work because of WebView2 limitations.
 - Google sign-in may be flagged as an "insecure browser" (the browser identifies itself as Chrome, but this is still being verified).
 - No private windows or account sync yet. Windows only.
 

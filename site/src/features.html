@@ -23,6 +23,7 @@
       <li><a href="#sleep">タブの自動休止とセッションの復元</a></li>
       <li><a href="#zoom">サイトごとのズーム</a></li>
       <li><a href="#screenshot">スクリーンショット</a></li>
+      <li><a href="#extensions">拡張機能（Chrome ウェブストア）</a></li>
       <li><a href="#notes">クイックメモ</a></li>
       <li><a href="#find">ページ内検索</a></li>
       <li><a href="#tabs">タブの操作</a></li>
@@ -242,6 +243,36 @@
     </div>
   </div>
 
+  <div class="feature" id="extensions">
+    <div class="text">
+      <h2>拡張機能（Chrome ウェブストア）</h2>
+      <p>Chrome ウェブストアの拡張機能を追加できます（<strong>Windows 版のみ</strong>。Android 版は非対応です）。ただし、WebView2 の拡張機能の仕組みは Chrome より機能が少ないので、<strong>動かない拡張機能もあります</strong>。</p>
+      <h3>追加のしかた</h3>
+      <ol>
+        <li>パレット（<kbd>Ctrl</kbd>+<kbd>K</kbd>）で「拡張機能」と打つか、設定の隣の<strong>「拡張機能」</strong>パネルを開きます。</li>
+        <li>ウェブストアで拡張機能のページを開いて、その URL（または32文字の ID）を貼り付けて「追加」を押します。</li>
+        <li>ウェブストアのページには、画面の右下に<strong>「Hizashi に追加」</strong>ボタンも出ます（ストア自身の「Chrome に追加」は、Chrome の中でしか動かないためです）。パレットの「このページの拡張機能を追加」でも追加できます。</li>
+        <li>確認の画面で、その拡張機能が何をできるか（すべてのサイトのページを読み取れる、など）が表示されます。よければ「追加する」を押します。</li>
+      </ol>
+      <p>手元の <code>.crx</code> / <code>.zip</code> ファイルや、展開済みのフォルダからも追加できます。</p>
+      <h3>管理</h3>
+      <ul>
+        <li><strong>有効／無効</strong>の切り替え、<strong>削除</strong>。</li>
+        <li><strong>開く</strong>／<strong>設定</strong>：WebView2 にはツールバーの拡張機能ボタンが無いので、ポップアップ画面と設定ページを、タブとして開きます。</li>
+        <li><strong>更新</strong>：ストアから入れたものは、ボタンで最新版を取り直します（自動更新はありません）。</li>
+      </ul>
+      <h3>知っておいてほしいこと</h3>
+      <ul>
+        <li>拡張機能は強い権限を持ちます。<strong>信頼できるものだけ</strong>追加してください。入れたあとの拡張機能の通信は、拡張機能が自分で行うもので、Hizashi は制御できません。</li>
+        <li>Hizashi 自身の画面（履歴・設定のパネル、アドレスバーなど）は、拡張機能を入れていない別のプロファイルで動いています。拡張機能は、これらの画面の中身を読み取れません。</li>
+        <li>動きやすいもの：ページの見た目を変えるもの、ページ内の便利機能、通信のブロック（Manifest V3）。動かないことがあるもの：ツールバーのボタンが前提のもの、ブラウザのタブやウィンドウを細かく操作するもの、旧式の Manifest V2 のもの。</li>
+        <li>ストアからの取得は、Chrome が使うのと同じ配信先（clients2.google.com）から、Chrome のふりをして行います。ストアの利用条件との関係は、ご自身の判断でお使いください。取得したファイルは、Hizashi 側で署名を検証していません（HTTPS で届いたものをそのまま使います）。</li>
+        <li>ストアで公開が終了した拡張機能や、地域・端末の制限があるものは、取得できないことがあります。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>うまく動かないとき</h3><p>追加はできたのに動かないときは、その拡張機能が WebView2 に無い機能を使っている可能性があります。ほかの方法（Hizashi に組み込みの広告ブロックなど）で代わりになることもあります。<a href="https://github.com/kaikomziu/hizashi/issues">Issues</a>で教えてください。</p></div>
+  </div>
+
   <div class="feature" id="notes">
     <div class="text">
       <span class="badge">Ctrl + Shift + N</span>
@@ -356,7 +387,7 @@
       <h2>できないこと・制限</h2>
       <p>あらかじめ知っておいてほしいことを、正直に書きます。</p>
       <ul>
-        <li><strong>拡張機能は使えません。</strong>Chrome ウェブストアの拡張機能には対応していません。</li>
+        <li><strong>拡張機能は一部だけ動きます。</strong>Chrome ウェブストアのものを追加できますが、WebView2 の制限で動かないものもあります（<a href="#extensions">詳しく</a>）。Android 版は非対応です。</li>
         <li><strong>シークレットウィンドウはありません。</strong>履歴を残したくないときは、履歴の削除や「閲覧データの削除」を使ってください。</li>
         <li><strong>アカウントの同期はありません。</strong>別のパソコンへのブックマークなどの引き継ぎは、手動（<a href="guide.html#backup">データのバックアップと移行</a>）になります。</li>
         <li><strong>Chrome などからのインポート機能はありません。</strong></li>

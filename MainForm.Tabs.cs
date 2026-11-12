@@ -112,6 +112,7 @@ public partial class MainForm
             if (t.View != v) return; // 初期化中に破棄された
             await SetupTabCore(t);
             t.Ready.TrySetResult(true);
+            StartExtensionSync();
             if (!popup) t.Core.Navigate(t.Url);
             Relayout();
             // 準備できた時点でこのタブがアクティブなら、そのまま入力できるようフォーカスを移す

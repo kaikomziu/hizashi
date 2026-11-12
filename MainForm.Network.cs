@@ -229,6 +229,9 @@ public partial class MainForm
         else
         {
             RecordHistory(t);
+            // Chrome ウェブストアのページには、「Hizashi に追加」ボタンを出す
+            if (ExtensionPackage.IsStoreHost(Util.HostOf(t.Url)) && t.Url.StartsWith("https://"))
+                _ = core?.ExecuteScriptAsync(ExtensionPackage.StoreButtonJs);
         }
         ScheduleState();
         SaveSessionSoon();
@@ -302,7 +305,7 @@ public partial class MainForm
     void OnTabMessage(Tab t, CoreWebView2WebMessageReceivedEventArgs e)
     {
         var src = e.Source ?? "";
-        if (!src.StartsWith(UiBase)) return;
+        if (!src.StartsWith(UiBase)) { OnStorePageMessage(e, src); return; }
         JsonElement root;
         try { root = JsonDocument.Parse(e.WebMessageAsJson).RootElement.Clone(); } catch { return; }
         var c = root.Str("c");

@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="logo.png">
 <link rel="stylesheet" href="assets/site.css">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hizashi","alternateName":"日差し","applicationCategory":"BrowserApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.1.0","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"downloadUrl":"https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe","url":"https://kaikomziu.github.io/hizashi/","author":{"@type":"Person","name":"kaikomziu"},"inLanguage":"ja"}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Hizashi","alternateName":"日差し","applicationCategory":"BrowserApplication","operatingSystem":"Windows 10, Windows 11","softwareVersion":"1.2.0","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"downloadUrl":"https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe","url":"https://kaikomziu.github.io/hizashi/","author":{"@type":"Person","name":"kaikomziu"},"inLanguage":"ja"}
 </script>
 </head>
 <body>
@@ -50,7 +50,7 @@
         <a class="btn primary" href="https://github.com/kaikomziu/hizashi/releases/latest/download/Hizashi.exe">Hizashi.exe をダウンロード</a>
         <a class="btn ghost" href="features.html">機能を詳しく見る</a>
       </div>
-      <p class="note" style="margin-top:14px">Windows 10 / 11（64ビット）・ インストール不要 ・ v1.1.0 ・ <a href="download.html">ダウンロードの詳細・SHA-256</a></p>
+      <p class="note" style="margin-top:14px">Windows 10 / 11（64ビット）・ インストール不要 ・ v1.2.0 ・ <a href="download.html">ダウンロードの詳細・SHA-256</a></p>
     </div>
     <img class="shot" src="screenshots/split-reader.png" alt="Hizashi の画面。左は通常のページ、右はリーダーモード（分割表示）" width="1384" height="904">
   </div>
@@ -62,7 +62,7 @@
     <p class="sub">表示エンジンは Microsoft Edge と同じ Chromium（WebView2）なので、たいていのサイトはそのまま表示できます。その上に、作業しやすさに寄せた機能を載せています。</p>
     <div class="grid">
       <div class="card"><h3>exe 1つで起動</h3><p>インストールも、.NET などの別途インストールも不要。ダウンロードしてダブルクリックするだけです。設定やデータは別の場所に保存されるので、exe を入れ替えるだけで更新できます。</p></div>
-      <div class="card"><h3>操作は Ctrl+K から</h3><p>タブ・ブックマーク・履歴・全 65 個のコマンドを、1つの入力欄であいまい検索。ショートカットを覚えなくても、たどり着けます。</p></div>
+      <div class="card"><h3>操作は Ctrl+K から</h3><p>タブ・ブックマーク・履歴・全 67 個のコマンドを、1つの入力欄であいまい検索。ショートカットを覚えなくても、たどり着けます。</p></div>
       <div class="card"><h3>送信しない・見張らない</h3><p>Hizashi 自身は、利用状況を一切送信しません。アカウント登録もありません。ソースコードは公開されていて、誰でも確認できます（MIT）。</p></div>
     </div>
   </section>
@@ -93,6 +93,7 @@
       <div class="card"><h3>強制ダークモード</h3><p>白いサイトを暗く。サイトごと、または全サイトで。</p><a class="more" href="features.html#dark">詳しく →</a></div>
       <div class="card"><h3>タブの自動休止</h3><p>使っていないタブのメモリを解放。再起動しても前回のタブが戻ります。</p><a class="more" href="features.html#sleep">詳しく →</a></div>
       <div class="card"><h3>ページ全体のスクリーンショット</h3><p>縦に長いページも1枚で撮影。保存してクリップボードにもコピー。</p><a class="more" href="features.html#screenshot">詳しく →</a></div>
+      <div class="card"><h3>拡張機能（Chrome ウェブストア）</h3><p>ストアの URL を貼るだけで追加。権限の確認、有効/無効、更新、削除つき。</p><a class="more" href="features.html#extensions">詳しく →</a></div>
       <div class="card"><h3>クイックメモ</h3><p>ページを見ながら書けるメモ帳。選択した文字を URL つきで追加。</p><a class="more" href="features.html#notes">詳しく →</a></div>
     </div>
   </section>
@@ -111,7 +112,7 @@
     <h2>正直なところ</h2>
     <p class="sub">向いていないこと・まだできないことも、先にお伝えします。</p>
     <div class="grid">
-      <div class="card"><h3>拡張機能は使えません</h3><p>Chrome ウェブストアの拡張機能には対応していません。よく使う機能（広告ブロックなど）は Hizashi 側に組み込んでいます。</p></div>
+      <div class="card"><h3>拡張機能は一部だけ</h3><p>Chrome ウェブストアの拡張機能を追加できますが、WebView2 の制限で動かないものもあります。広告ブロックなどよく使う機能は、Hizashi に組み込んでいます。</p></div>
       <div class="card"><h3>画面は日本語のみ</h3><p>今のところ、画面の言葉は日本語だけです。翻訳の提案は歓迎します。</p></div>
       <div class="card"><h3>署名のない個人開発</h3><p>コード署名がないため、初回起動時に SmartScreen の警告が出ます。ソースコードと SHA-256 で確認できます。</p></div>
       <div class="card"><h3>メモリは Chromium 並み</h3><p>Electron 版と同じ条件で測ると、メモリ使用量はほぼ同じでした。「省メモリ」ではありません（タブの自動休止で抑えられます）。</p></div>

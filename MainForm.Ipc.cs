@@ -104,6 +104,8 @@ public partial class MainForm
                     bangs = Search.Bangs.Keys.ToList(),
                     version = Updater.Current().ToString(3),
                 };
+            case "extensions":
+                return ExtensionsPanelData();
             case "help":
                 return commands.Select(x => new { id = x.Id, label = x.Label, keys = x.Keys }).ToList();
         }
@@ -238,6 +240,16 @@ public partial class MainForm
                 break;
             }
             case "k:panel-set": panelName = p.GetString(); break;
+
+            // 拡張機能
+            case "k:ext-add": Fire(() => ExtAddFromStoreAsync(p.GetString())); break;
+            case "k:ext-add-file": Fire(() => ExtAddFromFileAsync(false)); break;
+            case "k:ext-add-folder": Fire(() => ExtAddFromFileAsync(true)); break;
+            case "k:ext-toggle": Fire(() => ExtToggleAsync(p.Str("id"), p.Bool("enabled"))); break;
+            case "k:ext-remove": Fire(() => ExtRemoveAsync(p.GetString())); break;
+            case "k:ext-update": Fire(() => ExtUpdateAsync(p.GetString())); break;
+            case "k:ext-popup": ExtOpenPage(p.GetString(), false); break;
+            case "k:ext-options": ExtOpenPage(p.GetString(), true); break;
 
             // パネルからの操作
             case "k:history-delete":

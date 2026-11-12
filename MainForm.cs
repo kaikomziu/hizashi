@@ -143,7 +143,7 @@ public partial class MainForm : Form
 
         try
         {
-            env = await CoreWebView2Environment.CreateAsync(null, wvDir, new CoreWebView2EnvironmentOptions { Language = "ja" });
+            env = await CoreWebView2Environment.CreateAsync(null, wvDir, new CoreWebView2EnvironmentOptions { Language = "ja", AreBrowserExtensionsEnabled = true });
         }
         catch (WebView2RuntimeNotFoundException)
         {
@@ -164,11 +164,15 @@ public partial class MainForm : Form
         chrome.SendToBack();
         overlayView.Visible = false;
 
-        await chrome.EnsureCoreWebView2Async(env);
+        // Hizashi 自身の画面（外枠・オーバーレイ）は、別のプロファイルで動かす。
+        // 拡張機能は通常のプロファイルにだけ入るので、拡張機能が履歴パネルなどの内容を読み取れないようにするため
+        var uiOpts = env.CreateCoreWebView2ControllerOptions();
+        uiOpts.ProfileName = "hizashi-ui";
+        await chrome.EnsureCoreWebView2Async(env, uiOpts);
         SetupUiCore(chrome, false);
         chrome.CoreWebView2.Navigate(UiBase + "index.html");
 
-        await overlayView.EnsureCoreWebView2Async(env);
+        await overlayView.EnsureCoreWebView2Async(env, uiOpts);
         SetupUiCore(overlayView, true);
         overlayView.CoreWebView2.Navigate(UiBase + "overlay.html");
 

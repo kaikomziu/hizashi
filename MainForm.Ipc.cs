@@ -107,6 +107,8 @@ public partial class MainForm
                 };
             case "extensions":
                 return ExtensionsPanelData();
+            case "import":
+                return ImportPanelData();
             case "help":
                 return commands.Select(x => new { id = x.Id, label = x.Label, keys = x.Keys }).ToList();
         }
@@ -157,7 +159,7 @@ public partial class MainForm
 
             // ワークスペース
             case "k:ws-switch": SwitchWs(p.GetString()); break;
-            case "k:ws-new": Fire(NewWs); break;
+            case "k:ws-new": Fire(() => NewWs()); break;
             case "k:ws-menu": ShowWsMenu(p.GetString()); break;
 
             // ナビゲーション・メニュー
@@ -241,6 +243,10 @@ public partial class MainForm
                 break;
             }
             case "k:panel-set": panelName = p.GetString(); break;
+
+            // 他のブラウザからの取り込み
+            case "k:import-run": Fire(() => ImportRunAsync(p.Str("id"), p.Bool("bookmarks"), p.Bool("history"))); break;
+            case "k:import-file": Fire(ImportFileAsync); break;
 
             // 拡張機能
             case "k:ext-add": Fire(() => ExtAddFromStoreAsync(p.GetString())); break;

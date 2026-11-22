@@ -36,6 +36,9 @@
       <p><strong>Android 版は、拡張機能に対応していません。</strong>表示に使っている Android の WebView が、拡張機能に対応していないためです。</p></details>
     <details><summary>広告ブロックは、uBlock Origin のように強力ですか？</summary>
       <p>いいえ。Hizashi の広告ブロックは、広告・計測を行う約{{BLOCK_COUNT}}件のドメインへの通信を止めるだけの、単純な仕組みです。サイト自身が配信する広告（YouTube の動画広告など）は止められません。強力なブロックがほしい人には向いていません。</p></details>
+    <details id="accounts"><summary>Google アカウントを使い分けられますか？（アカウントの切り替え）</summary>
+      <p>Windows 版は、<strong>ワークスペースごとにログイン情報を分けられます</strong>。ワークスペースを作るときに「ログイン情報を分ける」を選ぶと、そのワークスペースだけの専用の Cookie になるので、「仕事」と「個人」で別のアカウントにログインして、<kbd>Alt</kbd>+<kbd>1</kbd> / <kbd>Alt</kbd>+<kbd>2</kbd> で切り替えられます。詳しくは<a href="features.html#workspaces">特長のページ</a>を見てください。</p>
+      <p>ただし、Google のログイン自体がうまくいくかは、次の項目のとおり、まだ確認できていません。Android 版には、この機能はありません。</p></details>
     <details><summary>Google アカウントでログインできますか？</summary>
       <p>うまくいかない場合があります。Google は、組み込みのブラウザからのログインを「安全でないブラウザ」として拒否することがあります。Hizashi はブラウザの名乗りを Chrome に揃えていますが、確実に通ることは確認できていません。ログインできないときは、そのサイトだけほかのブラウザを使ってください。Google 以外のサイトのログインは、ふつうに使えます。</p></details>
     <details><summary>パスワードの保存や自動入力はできますか？</summary>
@@ -46,7 +49,7 @@
     <details><summary>シークレットウィンドウはありますか？</summary>
       <p>ありません。履歴は、履歴パネルから削除でき、Cookie とキャッシュは、パレットの「閲覧データを削除」で消せます。</p></details>
     <details><summary>ブックマークや履歴を Chrome から取り込めますか？</summary>
-      <p>今のところ、インポート機能はありません。</p></details>
+      <p>ブックマークと履歴は、取り込めます（設定の「他のブラウザから取り込む」）。Chrome・Edge・Vivaldi・Brave・Opera・Firefox のプロファイルを自動で見つけます。パスワード・Cookie（ログイン状態）・拡張機能・設定は、取り込めません。詳しくは<a href="features.html#import">特長のページ</a>を見てください。</p></details>
     <details><summary>ブックマークや設定を、別のパソコンと同期できますか？</summary>
       <p>同期はできません。手動で引き継ぐ方法は、<a href="guide.html#backup">使い方ガイド</a>に書いています。</p></details>
     <details><summary>動画配信サービス（Netflix など）は見られますか？</summary>

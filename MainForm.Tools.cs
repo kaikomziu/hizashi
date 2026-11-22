@@ -226,16 +226,16 @@ public partial class MainForm
     }
 
     // タブが使うプロファイルのデータを消す（Hizashi 自身の画面は別プロファイルなので、chrome のものではない）
-    internal async Task ClearProfileData(CoreWebView2BrowsingDataKinds? kinds)
+    internal async Task ClearProfileData(CoreWebView2BrowsingDataKinds? kinds, Tab tab = null)
     {
-        var profile = ExtProfile() ?? throw new InvalidOperationException("ブラウザの準備ができていません");
+        var profile = (tab ?? ActiveTab)?.Core?.Profile ?? ExtProfile() ?? throw new InvalidOperationException("ブラウザの準備ができていません");
         if (kinds == null) await profile.ClearBrowsingDataAsync();
         else await profile.ClearBrowsingDataAsync(kinds.Value);
     }
 
     internal async Task ClearBrowsingData()
     {
-        if (!await AskConfirm("Cookie・キャッシュ・保存したパスワードなど、閲覧データをすべて削除します。\n（ログイン状態も解除されます。履歴・ブックマーク・メモは消えません）")) return;
+        if (!await AskConfirm("このワークスペースの Cookie・キャッシュ・保存したパスワードなど、閲覧データをすべて削除します。（アカウント用ワークスペースなら、そのアカウントのデータだけが対象です。ほかと共通のワークスペースは、まとめて対象になります）\n（ログイン状態も解除されます。履歴・ブックマーク・メモは消えません）")) return;
         await ClearProfileData(null);
         Toast("閲覧データを削除しました");
         ActiveTab?.Core?.Reload();

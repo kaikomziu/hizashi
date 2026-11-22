@@ -141,6 +141,7 @@ public partial class MainForm : Form
         currentWs = ValidWs(S.CurrentWs);
         ApplySavedBounds();
 
+        DeletePendingProfiles();
         try
         {
             env = await CoreWebView2Environment.CreateAsync(null, wvDir, new CoreWebView2EnvironmentOptions { Language = "ja", AreBrowserExtensionsEnabled = true });

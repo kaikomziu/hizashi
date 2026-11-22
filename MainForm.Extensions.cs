@@ -29,13 +29,45 @@ partial class MainForm
     Dictionary<string, ExtRecord> extIndex;
     List<ExtItem> extItems = new();
     bool extBusy;
-    bool extSyncStarted;
 
     string ExtDir => Path.Combine(dataDir, "extensions");
     string ExtIndexPath => Path.Combine(dataDir, "extensions.json");
 
-    // いま生きているタブから、拡張機能を入れるプロファイルを得る（UI 用のビューは別プロファイルなので使わない）
-    CoreWebView2Profile ExtProfile() => tabs.Select(t => t.Core).FirstOrDefault(c => c != null)?.Profile;
+    // いま生きているタブが使っているプロファイル（UI 用のビューは別プロファイルなので含めない）。アカウント用ワークスペースの分も含む
+    List<CoreWebView2Profile> ExtProfiles()
+    {
+        var l = new List<CoreWebView2Profile>();
+        foreach (var c in tabs.Select(t => t.Core).Where(c => c != null))
+        {
+            var p = c.Profile;
+            if (p != null && !l.Any(x => x.ProfileName == p.ProfileName)) l.Add(p);
+        }
+        return l;
+    }
+
+    // 一覧の表示や、追加の可否に使う「基準」のプロファイル（通常のプロファイルを優先）
+    CoreWebView2Profile ExtProfile()
+    {
+        var all = ExtProfiles();
+        return all.FirstOrDefault(p => string.Equals(p.ProfileName, "Default", StringComparison.OrdinalIgnoreCase)) ?? all.FirstOrDefault();
+    }
+
+    // 削除した拡張機能の ID（その時に準備できていなかったプロファイルからも、あとで外すため）
+    HashSet<string> extRemoved;
+    string ExtRemovedPath => Path.Combine(dataDir, "extensions-removed.json");
+
+    void LoadExtRemoved()
+    {
+        if (extRemoved != null) return;
+        try { extRemoved = JsonSerializer.Deserialize<HashSet<string>>(File.ReadAllText(ExtRemovedPath)) ?? new(); }
+        catch { extRemoved = new(); }
+    }
+
+    void SaveExtRemoved()
+    {
+        try { File.WriteAllText(ExtRemovedPath, JsonSerializer.Serialize(extRemoved)); }
+        catch (Exception e) { Program.LogError("削除した拡張機能の記録", e); }
+    }
 
     void LoadExtIndex()
     {
@@ -54,20 +86,24 @@ partial class MainForm
         catch (Exception e) { Program.LogError("拡張機能の一覧の保存", e); }
     }
 
-    // 最初のタブの準備ができたら一度だけ呼ぶ: フォルダはあるのにプロファイルから消えているものを読み込み直し、一覧を作る
-    void StartExtensionSync()
+    // プロファイルを使うタブが最初に準備できたとき、そのプロファイルを一度だけ同期する:
+    // 入れているのに無い拡張機能は読み込み直し、削除済みなのに残っているものは外す
+    readonly HashSet<string> extSyncedProfiles = new();
+
+    void StartExtensionSync(CoreWebView2Profile profile)
     {
-        if (extSyncStarted) return;
-        extSyncStarted = true;
-        _ = SafeRun(SyncExtensionsAsync);
+        if (profile == null || !extSyncedProfiles.Add(profile.ProfileName)) return;
+        _ = SafeRun(() => SyncProfileExtensionsAsync(profile));
     }
 
-    internal async Task SyncExtensionsAsync()
+    internal async Task SyncProfileExtensionsAsync(CoreWebView2Profile profile)
     {
-        var profile = ExtProfile();
-        if (profile == null) { extSyncStarted = false; return; }
         LoadExtIndex();
-        var have = (await profile.GetBrowserExtensionsAsync()).Select(x => x.Id).ToHashSet();
+        LoadExtRemoved();
+        var current = (await profile.GetBrowserExtensionsAsync()).ToList();
+        foreach (var e in current.Where(x => extRemoved.Contains(x.Id) && !extIndex.ContainsKey(x.Id)))
+            try { await e.RemoveAsync(); } catch (Exception ex) { Program.LogError("削除済みの拡張機能を外す " + e.Id, ex); }
+        var have = current.Select(x => x.Id).ToHashSet();
         foreach (var kv in extIndex.ToArray())
         {
             if (have.Contains(kv.Key)) continue;
@@ -78,6 +114,14 @@ partial class MainForm
         }
         SaveExtIndex();
         await RefreshExtItemsAsync();
+    }
+
+    // ストアから追加するとき、プロファイルの数だけ入れるための共通処理
+    async Task<List<CoreWebView2BrowserExtension>> AllExtensionsAsync()
+    {
+        var l = new List<CoreWebView2BrowserExtension>();
+        foreach (var p in ExtProfiles()) l.AddRange(await p.GetBrowserExtensionsAsync());
+        return l;
     }
 
     internal async Task RefreshExtItemsAsync()
@@ -200,13 +244,12 @@ partial class MainForm
         LoadExtIndex();
 
         // 同じ拡張機能（古い版）があれば、先に外す
-        var existing = await profile.GetBrowserExtensionsAsync();
+        var existing = await AllExtensionsAsync();
         var oldIds = extIndex.Where(kv => (storeId != null && kv.Value.StoreId == storeId) || kv.Key == prep.KeyId).Select(kv => kv.Key).ToList();
         var oldFolders = new List<string>();
         foreach (var oid in oldIds)
         {
-            var ext = existing.FirstOrDefault(x => x.Id == oid);
-            if (ext != null) await ext.RemoveAsync();
+            foreach (var ext in existing.Where(x => x.Id == oid)) await ext.RemoveAsync();
             oldFolders.Add(extIndex[oid].Folder);
             extIndex.Remove(oid);
         }
@@ -214,16 +257,24 @@ partial class MainForm
         var dest = Path.Combine(ExtDir, folderName);
         if (Directory.Exists(dest)) Directory.Delete(dest, true);
         Directory.Move(prep.Dir, dest);
-        CoreWebView2BrowserExtension added;
+        CoreWebView2BrowserExtension added = null;
         try
         {
-            added = await profile.AddBrowserExtensionAsync(dest);
+            // すべてのアカウント（プロファイル）に入れる。基準のプロファイルから先に入れる
+            foreach (var p in new[] { profile }.Concat(ExtProfiles().Where(x => x.ProfileName != profile.ProfileName)))
+            {
+                var a = await p.AddBrowserExtensionAsync(dest);
+                added ??= a;
+            }
         }
         catch
         {
             try { Directory.Delete(dest, true); } catch { }
             throw;
         }
+        LoadExtRemoved();
+        extRemoved.Remove(added.Id);
+        SaveExtRemoved();
         extIndex[added.Id] = new ExtRecord { Folder = folderName, StoreId = storeId };
         SaveExtIndex();
         foreach (var f in oldFolders.Distinct().Where(f => f != folderName))
@@ -308,26 +359,26 @@ partial class MainForm
     // ------------------------------------------------------------------ 有効/無効・削除・更新・ポップアップ
     internal async Task ExtToggleAsync(string id, bool enabled)
     {
-        var profile = ExtProfile();
-        if (profile == null) return;
-        var ext = (await profile.GetBrowserExtensionsAsync()).FirstOrDefault(x => x.Id == id);
-        if (ext == null) return;
-        try { await ext.EnableAsync(enabled); }
+        var exts = (await AllExtensionsAsync()).Where(x => x.Id == id).ToList();
+        if (exts.Count == 0) return;
+        try { foreach (var ext in exts) await ext.EnableAsync(enabled); }
         catch (Exception e) { Toast("切り替えられませんでした: " + e.Message); }
         await RefreshExtItemsAsync();
     }
 
     internal async Task ExtRemoveAsync(string id)
     {
-        var profile = ExtProfile();
-        if (profile == null) return;
-        var ext = (await profile.GetBrowserExtensionsAsync()).FirstOrDefault(x => x.Id == id);
+        var exts = (await AllExtensionsAsync()).Where(x => x.Id == id).ToList();
+        var ext = exts.FirstOrDefault();
         if (ext == null) return;
         var name = ext.Name;
         if (await AskPrompt("拡張機能を削除", $"「{name}」を削除します。（この拡張機能が保存したデータも消えます）", "", "削除する", false) == null) { ReopenExtPanel(); return; }
         try
         {
-            await ext.RemoveAsync();
+            foreach (var e in exts) await e.RemoveAsync();
+            LoadExtRemoved();
+            extRemoved.Add(id);
+            SaveExtRemoved();
             LoadExtIndex();
             if (extIndex.TryGetValue(id, out var rec))
             {

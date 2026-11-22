@@ -209,3 +209,5 @@ input[type=range] { accent-color: var(--accent); width: 120px; }
 .ext-note { padding: 14px 0 0; }
 
 .p-scroll .hint { padding-left: 0; padding-right: 0; }
+.imp-report { margin: 14px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; display: none; }
+.pbtn:disabled { opacity: .5; }

@@ -684,6 +684,8 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         await TestUpdater();
         await TestExtensions(bs);
         await TestPasswordsAndClear(bs);
+        await TestAccounts(bs);
+        await TestImport();
 
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
@@ -1119,6 +1121,284 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         CloseTab(p.Id, true);
     }
 
+
+    // ---------------------------------------------------------------- アカウントの使い分け（ワークスペースごとにログイン情報を分ける）
+    async Task TestAccounts(string baseUrl)
+    {
+        var sharedWs = currentWs;
+        var ws = new Workspace { Id = "wacct1", Name = "テスト用アカウント", Color = WsColors[3], Profile = "acct-test1" };
+        S.Workspaces.Add(ws);
+        settingsStore.Save();
+        SwitchWs(ws.Id);
+        await Sleep(1500);
+        var tA = ActiveTab;
+        await NormalizeWindow();
+        WinShot("19-window-account");
+        Check("アカウント用ワークスペースのタブは、専用のプロファイルで開く", tA != null && tA.Ws == ws.Id && tA.Core?.Profile.ProfileName == "acct-test1", tA?.Core?.Profile.ProfileName);
+        Check("共通のワークスペースのタブは、通常のプロファイルのまま", tabs.Where(x => x.Ws == sharedWs && x.Core != null).All(x => x.Core.Profile.ProfileName != "acct-test1"));
+
+        // Cookie が混ざらない
+        tA.Core.Navigate($"{baseUrl}/p?t=acctA");
+        await WaitLoad(tA);
+        await JS(tA, "document.cookie = 'hzacct=A; path=/'; 1");
+        var tS = CreateTab($"{baseUrl}/p?t=shared", new TabOpts { Ws = sharedWs, Activate = false });
+        await WaitLoad(tS);
+        await JS(tS, "document.cookie = 'hzshared=S; path=/'; 1");
+        var cA = await JS(tA, "document.cookie");
+        var cS = await JS(tS, "document.cookie");
+        Check("アカウント用ワークスペースの Cookie は、共通側から見えない", cA.Contains("hzacct=A") && !cA.Contains("hzshared") && cS.Contains("hzshared=S") && !cS.Contains("hzacct"), $"acct=[{cA}] shared=[{cS}]");
+
+        // ポップアップ（window.open）は、元のタブと同じプロファイルで開く
+        var before = tabs.Count;
+        await JS(tA, $"window.open('{baseUrl}/popup'); 1");
+        await Sleep(2500);
+        var pop = ActiveTab;
+        Check("アカウント用ワークスペースのポップアップも、同じプロファイルで開く",
+            tabs.Count == before + 1 && pop != null && pop.Ws == ws.Id && pop.Core?.Profile.ProfileName == "acct-test1", $"tabs {before}->{tabs.Count} ws={pop?.Ws} profile={pop?.Core?.Profile.ProfileName}");
+        if (pop != null && pop != tA) CloseTab(pop.Id, true);
+
+        // 拡張機能は、アカウントごとのプロファイルにも入る
+        await Sleep(2000);
+        var exts = await tA.Core.Profile.GetBrowserExtensionsAsync();
+        Check("追加済みの拡張機能が、アカウント用プロファイルにも入る", exts.Any(x => x.Name == "Hizashi Test Ext"), string.Join(",", exts.Select(x => x.Name)));
+        tA.Core.Navigate($"{baseUrl}/p?t=acctExt");
+        await WaitLoad(tA);
+        Check("アカウント用プロファイルでも、拡張機能のコンテンツスクリプトが動く", await JS(tA, "document.documentElement.getAttribute('data-hz-ext')") == "1");
+
+        // ワークスペースを移すと、プロファイルが変わるタブは作り直される（ログイン状態が切り替わる）
+        var old = tS.Ws;
+        tS.Ws = ws.Id;
+        RebindTabProfile(tS, old);
+        Check("プロファイルが変わるタブは、移動のときに休止して作り直す", tS.View == null);
+        ActivateTab(tS.Id);
+        await Sleep(1500);
+        await WaitLoad(tS);
+        var cMoved = await JS(tS, "document.cookie");
+        Check("移したタブは、移動先のアカウントの Cookie になる", tS.Core?.Profile.ProfileName == "acct-test1" && cMoved.Contains("hzacct=A") && !cMoved.Contains("hzshared"), $"profile={tS.Core?.Profile.ProfileName} cookie=[{cMoved}]");
+
+        // 閲覧データの削除は、見ているタブのプロファイル（このアカウント）だけ
+        await ClearProfileData(null, tS);
+        tS.Core.Reload();
+        await Sleep(1200);
+        await WaitLoad(tS);
+        var tShared2 = CreateTab($"{baseUrl}/p?t=shared2", new TabOpts { Ws = sharedWs, Activate = false });
+        await WaitLoad(tShared2);
+        Check("閲覧データの削除は、そのアカウントだけに効く（共通側の Cookie は残る）",
+            !(await JS(tS, "document.cookie")).Contains("hzacct") && (await JS(tShared2, "document.cookie")).Contains("hzshared=S"));
+        CloseTab(tShared2.Id, true);
+
+        // ワークスペースの削除: タブを閉じ、プロファイルのデータを次回起動時に消す
+        ActivateTab(tabs.First(x => x.Ws == sharedWs).Id);
+        var del = DeleteWs(ws.Id);
+        await ClickPromptOk();
+        await del;
+        Check("アカウント用ワークスペースを削除すると、そのタブが閉じて、データの削除が予約される",
+            S.Workspaces.All(x => x.Id != ws.Id) && tabs.All(x => x.Ws != ws.Id) && S.PendingProfileDeletes.Contains("acct-test1"));
+
+        // 起動時のデータ削除（予約された名前だけ。想定外の名前は触らない）
+        var fakeDir = Path.Combine(wvDir, "EBWebView", "WV2Profile_acct-fake");
+        var evilDir = Path.Combine(wvDir, "EBWebView", "evil-keep");
+        Directory.CreateDirectory(fakeDir); File.WriteAllText(Path.Combine(fakeDir, "x.txt"), "x");
+        Directory.CreateDirectory(evilDir);
+        var keepPending = S.PendingProfileDeletes.ToList();
+        S.PendingProfileDeletes = new List<string> { "acct-fake", @"..\evil-keep", "../evil-keep" };
+        DeletePendingProfiles();
+        Check("予約されたプロファイルのフォルダだけを消し、想定外の名前は触らない", !Directory.Exists(fakeDir) && Directory.Exists(evilDir) && S.PendingProfileDeletes.Count == 0);
+        try { Directory.Delete(evilDir, true); } catch { }
+        S.PendingProfileDeletes = keepPending; // 本物の予約は、次の起動（restore テスト）で実際に消えることを確かめる
+        settingsStore.Save();
+
+        Check("「アカウント用のワークスペースを作成」のコマンドがある", commands.Any(c => c.Id == "ws.newAccount"));
+    }
+
+
+    // ---------------------------------------------------------------- 他のブラウザからの取り込み
+    static void MakeSqlite(string file, string[] sql)
+    {
+        var cs = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = file, Pooling = false }.ToString();
+        using (var con = new Microsoft.Data.Sqlite.SqliteConnection(cs))
+        {
+            con.Open();
+            foreach (var s in sql)
+            {
+                using var cmd = con.CreateCommand();
+                cmd.CommandText = s;
+                cmd.ExecuteNonQuery();
+            }
+        }
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+    }
+
+    static string ChromiumBookmarksJson(params (string name, string url)[] bar) =>
+        JsonSerializer.Serialize(new
+        {
+            roots = new Dictionary<string, object>
+            {
+                ["bookmark_bar"] = new
+                {
+                    type = "folder", name = "バー",
+                    children = new object[]
+                    {
+                        new { type = "url", name = bar[0].name, url = bar[0].url },
+                        new { type = "folder", name = "フォルダ", children = new object[] { new { type = "url", name = bar[1].name, url = bar[1].url }, new { type = "url", name = "設定画面", url = "chrome://settings/" }, new { type = "url", name = "スクリプト", url = "javascript:alert(1)" } } },
+                    },
+                },
+                ["other"] = new { type = "folder", name = "その他", children = new object[] { new { type = "url", name = bar[2].name, url = bar[2].url } } },
+                ["synced"] = new { type = "folder", name = "モバイル", children = new object[] { } },
+            },
+        });
+
+    async Task TestImport()
+    {
+        var root = Path.Combine(testOut, "imp");
+        try { Directory.Delete(root, true); } catch { }
+        var local = Path.Combine(root, "local");
+        var roaming = Path.Combine(root, "roaming");
+
+        // Chrome（プロファイル2つ）・Vivaldi・Opera・Firefox の、それらしいフォルダを作る
+        var chrome = Path.Combine(local, "Google", "Chrome", "User Data");
+        Directory.CreateDirectory(Path.Combine(chrome, "Default"));
+        Directory.CreateDirectory(Path.Combine(chrome, "Profile 1"));
+        Directory.CreateDirectory(Path.Combine(chrome, "System Profile"));
+        File.WriteAllText(Path.Combine(chrome, "Local State"), JsonSerializer.Serialize(new { profile = new { info_cache = new Dictionary<string, object> { ["Default"] = new { name = "仕事用（main@example.com）" }, ["Profile 1"] = new { name = "個人" } } } }));
+        File.WriteAllText(Path.Combine(chrome, "Default", "Bookmarks"), ChromiumBookmarksJson(("バー1", "https://bar1.example/"), ("入れ子", "https://nested.example/a?x=1&y=2"), ("その他1", "https://other.example/")));
+        File.WriteAllText(Path.Combine(chrome, "Profile 1", "Bookmarks"), ChromiumBookmarksJson(("個人1", "https://personal.example/"), ("個人2", "https://personal2.example/"), ("個人3", "https://personal3.example/")));
+        // 取り込まない（触らない）ファイル。中身が変わらないことを後で確かめる
+        var secrets = new[] { Path.Combine(chrome, "Default", "Login Data"), Path.Combine(chrome, "Default", "Cookies") };
+        foreach (var s in secrets) File.WriteAllText(s, "SECRET-" + Path.GetFileName(s));
+
+        long ms(DateTime d) => (new DateTimeOffset(d, TimeSpan.Zero).ToUnixTimeMilliseconds() + 11644473600000L) * 1000;
+        var d1 = new DateTime(2026, 5, 1, 9, 0, 0, DateTimeKind.Utc);
+        var d2 = new DateTime(2026, 6, 2, 10, 0, 0, DateTimeKind.Utc);
+        var histDb = Path.Combine(chrome, "Default", "History");
+        MakeSqlite(histDb, new[]
+        {
+            "CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT, title TEXT, visit_count INTEGER, hidden INTEGER DEFAULT 0, last_visit_time INTEGER)",
+            $"INSERT INTO urls (url, title, last_visit_time) VALUES ('https://hist-old.example/', '古い', {ms(d1)})",
+            $"INSERT INTO urls (url, title, last_visit_time) VALUES ('https://hist-new.example/', '新しい', {ms(d2)})",
+            $"INSERT INTO urls (url, title, last_visit_time, hidden) VALUES ('https://hidden.example/', '隠し', {ms(d2)}, 1)",
+            $"INSERT INTO urls (url, title, last_visit_time) VALUES ('chrome://version/', 'chrome', {ms(d2)})",
+        });
+
+        var viv = Path.Combine(local, "Vivaldi", "User Data", "Default");
+        Directory.CreateDirectory(viv);
+        File.WriteAllText(Path.Combine(viv, "Bookmarks"), ChromiumBookmarksJson(("Viv1", "https://viv1.example/"), ("Viv2", "https://viv2.example/"), ("Viv3", "https://viv3.example/")));
+
+        var opera = Path.Combine(roaming, "Opera Software", "Opera Stable");
+        Directory.CreateDirectory(opera);
+        File.WriteAllText(Path.Combine(opera, "Bookmarks"), ChromiumBookmarksJson(("Op1", "https://op1.example/"), ("Op2", "https://op2.example/"), ("Op3", "https://op3.example/")));
+
+        var ff = Path.Combine(roaming, "Mozilla", "Firefox", "Profiles", "abc123.default-release");
+        Directory.CreateDirectory(ff);
+        MakeSqlite(Path.Combine(ff, "places.sqlite"), new[]
+        {
+            "CREATE TABLE moz_places (id INTEGER PRIMARY KEY, url TEXT, title TEXT, last_visit_date INTEGER)",
+            "CREATE TABLE moz_bookmarks (id INTEGER PRIMARY KEY, type INTEGER, fk INTEGER, parent INTEGER, title TEXT, dateAdded INTEGER)",
+            "INSERT INTO moz_places VALUES (1, 'https://ff-bm.example/', 'FFブックマーク', 1780000000000000)",
+            "INSERT INTO moz_places VALUES (2, 'https://ff-hist.example/', 'FF履歴', 1790000000000000)",
+            "INSERT INTO moz_places VALUES (3, 'place:type=6', 'place', NULL)",
+            "INSERT INTO moz_bookmarks VALUES (1, 1, 1, 2, 'FFブックマーク', 1)",
+            "INSERT INTO moz_bookmarks VALUES (2, 2, NULL, 1, 'フォルダ', 2)",
+            "INSERT INTO moz_bookmarks VALUES (3, 1, 3, 2, 'place', 3)",
+        });
+
+        // --- 検出
+        var found = BrowserImport.Detect(local, roaming);
+        string Names() => string.Join(" / ", found.Select(x => $"{x.Browser}:{x.Profile}:{x.BookmarkCount}"));
+        var cDef = found.FirstOrDefault(x => x.Browser == "Google Chrome" && x.Profile.StartsWith("仕事用"));
+        var cP1 = found.FirstOrDefault(x => x.Browser == "Google Chrome" && x.Profile == "個人");
+        Check("Chrome のプロファイルを、名前つきで見つける（Local State から）", cDef != null && cP1 != null && cDef.HasBookmarks && cDef.HasHistory && !cP1.HasHistory, Names());
+        Check("Vivaldi・Opera・Firefox も見つける", found.Any(x => x.Browser == "Vivaldi") && found.Any(x => x.Browser == "Opera") && found.Any(x => x.Browser == "Firefox"), Names());
+        Check("システム用のフォルダ（System Profile）は対象にしない", found.All(x => !x.Dir.Contains("System Profile")));
+        Check("ブックマークの件数を数える（chrome:// や javascript: は数えない）", cDef.BookmarkCount == 3 && found.First(x => x.Browser == "Vivaldi").BookmarkCount == 3, cDef.BookmarkCount.ToString());
+
+        // --- ブックマークの読み取り
+        var bms = BrowserImport.ReadBookmarks(cDef);
+        Check("Chromium 系のブックマークを、バー → フォルダの中 → その他の順に読む", bms.Select(b => b.Url).SequenceEqual(new[] { "https://bar1.example/", "https://nested.example/a?x=1&y=2", "https://other.example/" }), string.Join(",", bms.Select(b => b.Url)));
+        var ffs = found.First(x => x.Browser == "Firefox");
+        var ffb = BrowserImport.ReadBookmarks(ffs);
+        Check("Firefox のブックマークを読む（place: などは除く）", ffb.Count == 1 && ffb[0].Url == "https://ff-bm.example/" && ffb[0].Title == "FFブックマーク", string.Join(",", ffb.Select(b => b.Url)));
+
+        var html = "<!DOCTYPE NETSCAPE-Bookmark-file-1><DL><p><DT><H3>フォルダ</H3><DL><p><DT><A HREF=\"https://html1.example/?a=1&amp;b=2\" ADD_DATE=\"1\">HTML &amp; 1</A><DT><A HREF=\"javascript:void(0)\">js</A></DL><p><DT><a href=\"http://html2.example/\">二つ目</a></DL>";
+        var hb = BrowserImport.ReadNetscapeHtml(html);
+        Check("書き出した HTML のブックマークを読む（&amp; の変換、javascript: 除外）", hb.Count == 2 && hb[0].Url == "https://html1.example/?a=1&b=2" && hb[0].Title == "HTML & 1" && hb[1].Title == "二つ目", string.Join(",", hb.Select(b => b.Url)));
+        var badFile = Path.Combine(root, "not-bookmarks.html");
+        File.WriteAllText(badFile, "<html><body>ブックマークではありません</body></html>");
+        var badRead = false;
+        try { BrowserImport.ReadBookmarkFile(badFile); } catch (InvalidDataException) { badRead = true; }
+        Check("ブックマークでないファイルは、わかりやすく断る", badRead);
+
+        // --- 履歴の読み取り
+        var hist = BrowserImport.ReadHistory(cDef, 100);
+        var wantOld = new DateTimeOffset(d1, TimeSpan.Zero).ToUnixTimeMilliseconds();
+        var wantNew = new DateTimeOffset(d2, TimeSpan.Zero).ToUnixTimeMilliseconds();
+        Check("Chromium 系の履歴を、新しい順に読む（時刻は変換、隠し・chrome:// は除く）",
+            hist.Count == 2 && hist[0].Url == "https://hist-new.example/" && hist[0].Ts == wantNew && hist[1].Ts == wantOld && hist[1].Title == "古い", string.Join(",", hist.Select(h => h.Url + "@" + h.Ts)));
+        var fh = BrowserImport.ReadHistory(ffs, 100);
+        Check("Firefox の履歴を読む", fh.Count == 2 && fh[0].Url == "https://ff-hist.example/" && fh[0].Ts == 1790000000000, string.Join(",", fh.Select(h => h.Url + "@" + h.Ts)));
+
+        // ブラウザが履歴を使用中（排他的に開いている）ときは、わかりやすいメッセージで失敗する。元のファイルは壊さない
+        string lockedMsg = null;
+        using (var held = new FileStream(histDb, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            try { BrowserImport.ReadHistory(cDef, 100); } catch (IOException e) { lockedMsg = e.Message; }
+        }
+        Check("履歴のファイルが使用中なら、終了してからやり直すよう案内する", lockedMsg != null && lockedMsg.Contains("終了"), lockedMsg);
+        Check("使用中の履歴が解除されれば、また読める", BrowserImport.ReadHistory(cDef, 100).Count == 2);
+
+        // --- 取り込み（重複の除外・並び・上限）
+        var existing = new List<Bookmark> { new() { Url = "https://bar1.example/", Title = "もともと" } };
+        var (added, skipped) = BrowserImport.MergeBookmarks(existing, bms);
+        Check("ブックマークの取り込みは、すでにある URL を足さず、末尾に足す", added == 2 && skipped == 1 && existing[0].Title == "もともと" && existing.Count == 3 && existing[^1].Url == "https://other.example/");
+        var eh = new List<HistoryItem> { new() { Url = "https://hist-new.example/", Title = "新しい", Ts = wantNew }, new() { Url = "https://mid.example/", Title = "中", Ts = (wantOld + wantNew) / 2 } };
+        var addedH = BrowserImport.MergeHistory(eh, hist, 5000);
+        Check("履歴の取り込みは、同じ URL・時刻を足さず、時刻順に並べる", addedH == 1 && eh.Select(h => h.Ts).SequenceEqual(eh.Select(h => h.Ts).OrderBy(x => x)) && eh.Count == 3);
+        var capped = new List<HistoryItem>(Enumerable.Range(0, 10).Select(i => new HistoryItem { Url = $"https://c{i}.example/", Ts = 1000 + i }));
+        BrowserImport.MergeHistory(capped, new[] { new HistoryItem { Url = "https://newest.example/", Ts = 99999 } }, 5);
+        Check("履歴は、新しい方から上限の件数だけ残す", capped.Count == 5 && capped[^1].Url == "https://newest.example/" && capped[0].Ts == 1006);
+
+        // --- 実際のアプリへの取り込み
+        ImportLocalDir = local;
+        ImportRoamingDir = roaming;
+        var bmBefore = Bookmarks.Count;
+        var hBefore = History.Count;
+        var snapshot = secrets.Select(File.ReadAllText).ToArray();
+        var bmHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(chrome, "Default", "Bookmarks"))));
+        var hdbHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(histDb)));
+        await ImportRunAsync(cDef.Id, true, true);
+        Check("アプリへ取り込める（ブックマークと履歴が増え、結果の文章が出る）", Bookmarks.Count == bmBefore + 3 && History.Count == hBefore + 2 && importReport.Contains("ブックマーク 3 件") && importReport.Contains("履歴 2 件"), importReport);
+        await ImportRunAsync(cDef.Id, true, true);
+        Check("同じものをもう一度取り込んでも、増えない", Bookmarks.Count == bmBefore + 3 && History.Count == hBefore + 2 && importReport.Contains("ブックマーク 0 件"), importReport);
+        Check("元のブラウザのファイルは書き換えない・パスワードや Cookie のファイルにも触れない",
+            Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(Path.Combine(chrome, "Default", "Bookmarks")))) == bmHash &&
+            Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(histDb))) == hdbHash &&
+            secrets.Select(File.ReadAllText).SequenceEqual(snapshot) && !Directory.GetDirectories(Path.GetTempPath(), "hizashi-import-*").Any());
+        var htmlPath = Path.Combine(root, "html-bm.html");
+        File.WriteAllText(htmlPath, html);
+        await ImportPathAsync(htmlPath);
+        Check("HTML のファイルからも取り込める", Bookmarks.Any(b => b.Url == "http://html2.example/") && importReport.Contains("ブックマーク 2 件"), importReport);
+
+        // 取り込みで足したテスト用のデータは消しておく
+        Bookmarks.RemoveAll(b => b.Url.Contains(".example/") && (b.Url.Contains("bar1") || b.Url.Contains("nested") || b.Url.Contains("other.example") || b.Url.Contains("html")));
+        History.RemoveAll(h => h.Url.Contains("hist-new.example") || h.Url.Contains("hist-old.example"));
+        bookmarksStore.Save();
+        historyStore.Save();
+        ImportLocalDir = ImportRoamingDir = null;
+
+        ImportLocalDir = local;
+        ImportRoamingDir = roaming;
+        importReport = "Google Chrome（仕事用）: ブックマーク 3 件を追加、履歴 2 件を追加";
+        OpenPanel("import");
+        await Sleep(1200);
+        await Shot(overlayView.CoreWebView2, "18-panel-import");
+        HideOverlay(false);
+        ImportLocalDir = ImportRoamingDir = null;
+        Check("「他のブラウザのデータを取り込む」コマンドがある", commands.Any(c => c.Id == "panel.import"));
+        // このパソコンに入っているブラウザの検出（結果は参考表示。ファイルは読まない）
+        var real = BrowserImport.Detect(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+        testLog.WriteLine("  [info] このPCで検出した他のブラウザ: " + (real.Count == 0 ? "なし" : string.Join(", ", real.Select(x => $"{x.Browser}({x.Profile}):ブックマーク{x.BookmarkCount}件").Distinct())));
+    }
+
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット
     // 使い捨てのプロファイルで、サンプルサイト（https://kurashi-memo.example/ ＝実在しない予約ドメイン）を使って撮る。
     // 個人の履歴やブックマークは写らない。
@@ -1293,6 +1573,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         Check("ブックマークが保存されている", Bookmarks.Count >= 5, $"count={Bookmarks.Count}");
         Check("履歴が保存されている", History.Count >= 3, $"count={History.Count}");
         Check("サイトごとの設定が保存されている", Sites.Zoom != null && Sites.Dark.Count >= 1);
+        Check("削除したアカウントのプロファイルのデータが、起動時に消える", !Directory.Exists(Path.Combine(wvDir, "EBWebView", "WV2Profile_acct-test1")) && S.PendingProfileDeletes.Count == 0, string.Join(",", S.PendingProfileDeletes));
         Check("追加した拡張機能が、再起動後も入っている", extItems.Any(x => x.Name == "Hizashi Test Ext" && x.Enabled), string.Join(",", extItems.Select(x => x.Name)));
         var ntab = CreateTab(NewtabUrl);
         await WaitLoad(ntab);

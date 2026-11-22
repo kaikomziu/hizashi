@@ -119,7 +119,8 @@ public partial class MainForm
         Cmd("focus.stop", "集中モードを終了", "", StopFocus);
 
         // ワークスペース
-        Cmd("ws.new", "ワークスペースを作成", "", () => Fire(NewWs));
+        Cmd("ws.new", "ワークスペースを作成", "", () => Fire(() => NewWs()));
+        Cmd("ws.newAccount", "アカウント用のワークスペースを作成（ログイン情報を分ける）", "", () => Fire(() => NewWs(true)));
         Cmd("ws.rename", "ワークスペース名を変更", "", () => Fire(() => RenameWs()));
         Cmd("ws.delete", "ワークスペースを削除", "", () => Fire(() => DeleteWs()));
 
@@ -149,6 +150,7 @@ public partial class MainForm
         }));
         Cmd("app.shortcut", "デスクトップとスタートメニューにショートカットを作る", "", () => CreateShortcuts());
         Cmd("panel.extensions", "拡張機能を管理", "", () => OpenPanel("extensions"));
+        Cmd("panel.import", "他のブラウザのデータ（ブックマーク・履歴）を取り込む", "", () => OpenPanel("import"));
         Cmd("ext.addCurrent", "このページの拡張機能を追加（Chrome ウェブストア）", "", ExtAddCurrentPage);
         Cmd("app.update", "更新を確認（GitHub）", "", CheckForUpdate);
         Cmd("app.about", "Hizashi について", "", ShowAbout);
@@ -641,7 +643,9 @@ public partial class MainForm
                 mv.DropDownItems.Add(MI(w.Name, () =>
                 {
                     var wasActive = activeId == t.Id;
+                    var oldWs = t.Ws;
                     t.Ws = wid;
+                    RebindTabProfile(t, oldWs);
                     if (wasActive)
                     {
                         var rest = WsOrdered(currentWs);
@@ -680,6 +684,9 @@ public partial class MainForm
     void ShowWsMenu(string id)
     {
         var m = NewMenu();
+        var ws = S.Workspaces.FirstOrDefault(x => x.Id == id);
+        m.Items.Add(MI(string.IsNullOrEmpty(ws?.Profile) ? "ログイン情報: ほかと共通" : "ログイン情報: このワークスペース専用（アカウント用）", null, false));
+        m.Items.Add(new ToolStripSeparator());
         m.Items.Add(MI("名前を変更", () => Fire(() => RenameWs(id))));
         m.Items.Add(MI("削除", () => Fire(() => DeleteWs(id))));
         ShowMenu(m);

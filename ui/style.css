@@ -145,6 +145,9 @@ body.layout-top .tab:not(.pinned) { min-width: 120px; }
   background: var(--c); opacity: .5; cursor: default; flex: none;
   transition: opacity .12s, transform .12s;
 }
+.ws { position: relative; }
+/* ログイン情報（Cookie）を分けている、アカウント用のワークスペースには、右下に点を付ける */
+.ws.sep::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 0 2px var(--bg); }
 .ws:hover { opacity: .9; transform: scale(1.08); }
 .ws.active { opacity: 1; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--c); }
 .ws-add {

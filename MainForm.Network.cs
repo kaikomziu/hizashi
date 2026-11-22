@@ -245,7 +245,7 @@ public partial class MainForm
         {
             e.Handled = true;
             var uri = string.IsNullOrEmpty(e.Uri) ? "about:blank" : e.Uri;
-            var nt = CreateTab(uri, new TabOpts { After = opener.Id, Popup = true });
+            var nt = CreateTab(uri, new TabOpts { After = opener.Id, Popup = true, Ws = opener.Ws });
             await nt.Ready.Task;
             e.NewWindow = nt.Core;
         }

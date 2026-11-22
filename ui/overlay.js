@@ -217,7 +217,7 @@ async function renderPanel() {
   if (fresh) { body.replaceChildren(); shellFor = name; }
   const data = await K.invoke('k:panel-data', name, search[name] || '');
   if (curPanel !== name) return;
-  ({ history: renderHistory, downloads: renderDownloads, bookmarks: renderBookmarks, notes: renderNotes, extensions: renderExtensions, settings: renderSettings, help: renderHelp })[name](data, fresh);
+  ({ history: renderHistory, downloads: renderDownloads, bookmarks: renderBookmarks, notes: renderNotes, extensions: renderExtensions, import: renderImport, settings: renderSettings, help: renderHelp })[name](data, fresh);
 }
 
 // 検索ボックス付きの共通の骨組み
@@ -451,6 +451,11 @@ function renderSettings(cfg, fresh) {
   // 設定は操作中に作り直すと入力が飛ぶので、パネルを開いたときだけ描画する
   if (!fresh) return;
   const wrap = h('div', 'p-scroll');
+  wrap.appendChild(sec('データの引き継ぎ'));
+  const imp = h('button', 'pbtn primary', '他のブラウザから取り込む');
+  imp.addEventListener('click', () => { K.send('k:panel-set', 'import'); openPanel('import'); });
+  wrap.appendChild(row('Chrome・Edge・Vivaldi・Firefox などから', 'ブックマークと履歴を取り込みます（パスワードやログイン状態は取り込めません）', imp));
+
   wrap.appendChild(sec('アップデート'));
   const upd = h('button', 'pbtn primary', '更新を確認');
   upd.addEventListener('click', () => { K.send('k:ov-close'); setTimeout(() => K.send('k:cmd', 'app.update'), 30); });
@@ -504,6 +509,50 @@ function renderSettings(cfg, fresh) {
   for (const b of cfg.bangs) { const c = h('span', 'chip'); c.innerHTML = `<b>${b}</b>`; chips.appendChild(c); }
   wrap.appendChild(chips);
   body.replaceChildren(wrap);
+}
+
+// ---------- 他のブラウザから取り込む ----------
+function renderImport(d, fresh) {
+  if (fresh) {
+    const wrap = h('div', 'p-scroll');
+    wrap.appendChild(sec('このパソコンのブラウザから'));
+    wrap.appendChild(h('div', 'hint', 'ブックマークと履歴を、Hizashi に取り込みます（いまのデータは消さず、足します）。元のブラウザのデータは、読むだけで書き換えません。'));
+    wrap.appendChild(h('div', 'imp-list'));
+    wrap.appendChild(sec('ファイルから'));
+    wrap.appendChild(h('div', 'hint', 'ブラウザから書き出したブックマークのファイル（HTML）や、Chromium 系の「Bookmarks」ファイルを選べます。Safari・Opera・Brave・Vivaldi など、ほとんどのブラウザで書き出せます。'));
+    const f = h('div', 'ext-add');
+    const fb = h('button', 'pbtn', 'ファイルを選んで取り込む');
+    fb.addEventListener('click', () => K.send('k:import-file'));
+    f.appendChild(fb);
+    wrap.appendChild(f);
+    wrap.appendChild(h('div', 'imp-report'));
+    wrap.appendChild(sec('取り込めないもの'));
+    wrap.appendChild(h('div', 'hint', 'パスワード・Cookie（ログイン状態）・拡張機能・設定・開いているタブは、取り込めません（ブラウザが暗号化して守っていて、Hizashi からは読めない・入れられないためです）。Google などは、Hizashi で改めてログインしてください。パスワードは、元のブラウザの管理画面から書き出して、パスワード管理ツール（Bitwarden など）に入れる方法があります。'));
+    wrap.appendChild(h('div', 'hint', '履歴は、元のブラウザが起動中だと読めないことがあります。そのときは、元のブラウザを終了してからやり直してください（ブックマークは、起動中でも取り込めます）。'));
+    body.replaceChildren(wrap);
+  }
+  const list = body.querySelector('.imp-list');
+  if (!list) return;
+  list.replaceChildren();
+  if (!d.sources.length) list.appendChild(h('div', 'hint', 'ブラウザのデータが見つかりませんでした。下の「ファイルから」を使ってください。'));
+  for (const s of d.sources) {
+    const r = h('div', 'ext-item');
+    const lb = h('div', 'lb');
+    lb.appendChild(h('b', '', `${s.browser} ・ ${s.profile}`));
+    const info = [];
+    if (s.hasBookmarks) info.push(s.bookmarkCount >= 0 ? `ブックマーク ${s.bookmarkCount} 件` : 'ブックマークあり');
+    if (s.hasHistory) info.push('履歴あり');
+    lb.appendChild(h('small', '', info.join(' ・ ')));
+    const acts = h('div', 'ext-acts');
+    const btn = (label, bm, hi, cls) => { const b = h('button', 'pbtn' + (cls ? ' ' + cls : ''), label); b.disabled = d.busy; b.addEventListener('click', () => K.send('k:import-run', { id: s.id, bookmarks: bm, history: hi })); acts.appendChild(b); };
+    if (s.hasBookmarks) btn('ブックマーク', true, false);
+    if (s.hasHistory) btn('履歴', false, true);
+    if (s.hasBookmarks && s.hasHistory) btn('両方', true, true, 'primary');
+    r.append(lb, acts);
+    list.appendChild(r);
+  }
+  const rep = body.querySelector('.imp-report');
+  if (rep) { rep.textContent = d.report || ''; rep.style.display = d.report ? 'block' : 'none'; }
 }
 
 // ---------- 拡張機能 ----------

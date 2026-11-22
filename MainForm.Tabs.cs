@@ -108,11 +108,13 @@ public partial class MainForm
         var v = t.View;
         try
         {
-            await v.EnsureCoreWebView2Async(env);
+            var opts = TabControllerOptions(t);
+            if (opts != null) await v.EnsureCoreWebView2Async(env, opts); // アカウント用ワークスペースは、専用のプロファイルで開く
+            else await v.EnsureCoreWebView2Async(env);
             if (t.View != v) return; // 初期化中に破棄された
             await SetupTabCore(t);
             t.Ready.TrySetResult(true);
-            StartExtensionSync();
+            StartExtensionSync(t.Core.Profile);
             if (!popup) t.Core.Navigate(t.Url);
             Relayout();
             // 準備できた時点でこのタブがアクティブなら、そのまま入力できるようフォーカスを移す
@@ -304,19 +306,72 @@ public partial class MainForm
         Toast("ワークスペース: " + S.Workspaces.First(x => x.Id == id).Name);
     }
 
-    internal async Task NewWs()
+    // ワークスペースが使う WebView2 のプロファイル名（共有なら null = 通常のプロファイル）
+    internal string ProfileOf(string ws)
     {
-        var name = await AskPrompt("新しいワークスペース", "名前（例: 仕事 / 勉強 / 趣味）", "", "作成");
+        var w = S.Workspaces.FirstOrDefault(x => x.Id == ws);
+        return string.IsNullOrEmpty(w?.Profile) ? null : w.Profile;
+    }
+
+    CoreWebView2ControllerOptions TabControllerOptions(Tab t)
+    {
+        var name = ProfileOf(t.Ws);
+        if (name == null) return null;
+        var o = env.CreateCoreWebView2ControllerOptions();
+        o.ProfileName = name;
+        return o;
+    }
+
+    // 削除したアカウント用プロファイルのデータを、起動時（どの WebView2 も使っていないうち）に消す
+    internal void DeletePendingProfiles()
+    {
+        try
+        {
+            if (S.PendingProfileDeletes == null || S.PendingProfileDeletes.Count == 0) return;
+            var left = new List<string>();
+            foreach (var name in S.PendingProfileDeletes)
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(name ?? "", "^[a-z0-9_-]{1,64}$")) continue; // 想定外の名前は触らない
+                var dir = Path.Combine(wvDir, "EBWebView", "WV2Profile_" + name);
+                try { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
+                catch { left.Add(name); }
+            }
+            S.PendingProfileDeletes = left;
+            settingsStore.Save();
+        }
+        catch (Exception e) { Program.LogError("プロファイルの削除", e); }
+    }
+
+    internal async Task NewWs(bool? separate = null)
+    {
+        var name = await AskPrompt(separate == true ? "アカウント用のワークスペース" : "新しいワークスペース",
+            separate == true ? "名前（例: 仕事用 / 個人 / サブ垢）" : "名前（例: 仕事 / 勉強 / 趣味）", "", "作成");
         if (string.IsNullOrWhiteSpace(name)) return;
+        if (separate == null)
+        {
+            // 「キャンセル」なら、ほかと共通のワークスペースにする
+            separate = await AskPrompt("ログイン情報を分けますか？",
+                "別のアカウントでログインしたい（例: Google アカウントを使い分けたい）ときは「分ける」を押してください。Cookie やログイン状態が、このワークスペースだけの別のものになります。\n「キャンセル」を押すと、ほかと共通のワークスペースになります。",
+                "", "分ける", false) != null;
+        }
         var ws = new Workspace
         {
             Id = "w" + Util.Now(),
             Name = name.Trim()[..Math.Min(12, name.Trim().Length)],
             Color = WsColors[S.Workspaces.Count % WsColors.Length],
+            Profile = separate == true ? "acct-" + Guid.NewGuid().ToString("N")[..10] : null,
         };
         S.Workspaces.Add(ws);
         settingsStore.Save();
         SwitchWs(ws.Id);
+        if (ws.Profile != null) Toast($"「{ws.Name}」は、ほかとログイン情報が別のワークスペースです");
+    }
+
+    // ワークスペースを移したとき、プロファイルが変わるタブは、作り直す（WebView2 は、作成後にプロファイルを変えられない）
+    internal void RebindTabProfile(Tab t, string oldWs)
+    {
+        if (ProfileOf(oldWs) == ProfileOf(t.Ws)) return;
+        if (t.View != null) SleepTab(t, true);
     }
 
     internal async Task RenameWs(string id = null)
@@ -337,9 +392,23 @@ public partial class MainForm
         if (S.Workspaces.Count <= 1) { Toast("最後のワークスペースは削除できません"); return; }
         var w = S.Workspaces.FirstOrDefault(x => x.Id == id);
         if (w == null) return;
-        if (!await AskConfirm($"「{w.Name}」を削除します。\nタブは別のワークスペースに移動します。")) return;
+        var separated = !string.IsNullOrEmpty(w.Profile);
+        if (!await AskConfirm(separated
+                ? $"「{w.Name}」を削除します。\nこのワークスペースのタブは閉じ、ログイン情報（Cookie など）も削除します。"
+                : $"「{w.Name}」を削除します。\nタブは別のワークスペースに移動します。")) return;
         var dest = S.Workspaces.First(x => x.Id != id).Id;
-        foreach (var t in tabs.Where(t => t.Ws == id)) t.Ws = dest;
+        if (separated)
+        {
+            // 別プロファイルのタブは、移すとログインが外れるので閉じる
+            foreach (var t in tabs.Where(t => t.Ws == id).ToArray()) CloseTab(t.Id, true);
+            if (!tabs.Any()) CreateTab(NewtabUrl, new TabOpts { Ws = dest });
+            S.PendingProfileDeletes ??= new();
+            if (!S.PendingProfileDeletes.Contains(w.Profile)) S.PendingProfileDeletes.Add(w.Profile);
+        }
+        else
+        {
+            foreach (var t in tabs.Where(t => t.Ws == id)) { var old = t.Ws; t.Ws = dest; RebindTabProfile(t, old); }
+        }
         S.Workspaces.Remove(w);
         settingsStore.Save();
         if (currentWs == id) SwitchWs(dest);

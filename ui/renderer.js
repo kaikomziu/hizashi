@@ -119,10 +119,10 @@ function renderWorkspaces() {
   el.wsBar.replaceChildren();
   for (const w of S.workspaces) {
     const c = document.createElement('div');
-    c.className = 'ws' + (w.id === S.currentWs ? ' active' : '');
+    c.className = 'ws' + (w.id === S.currentWs ? ' active' : '') + (w.profile ? ' sep' : '');
     c.style.setProperty('--c', w.color);
     c.textContent = w.name.charAt(0);
-    c.title = `${w.name}（Alt+${S.workspaces.indexOf(w) + 1}）`;
+    c.title = `${w.name}（Alt+${S.workspaces.indexOf(w) + 1}）${w.profile ? ' ・ ログイン情報はこのワークスペース専用' : ''}`;
     c.addEventListener('click', () => K.send('k:ws-switch', w.id));
     c.addEventListener('contextmenu', (e) => { e.preventDefault(); K.send('k:ws-menu', w.id); });
     el.wsBar.appendChild(c);

@@ -7,6 +7,8 @@ public class Workspace
     public string Id { get; set; }
     public string Name { get; set; }
     public string Color { get; set; }
+    // 空なら、ほかのワークスペースと Cookie・ログイン状態を共有する。入っていれば、そのワークスペースだけの別プロファイル（アカウントの使い分け用）
+    public string Profile { get; set; }
 }
 
 public class WinBounds
@@ -21,6 +23,7 @@ public class WinBounds
 public class Settings
 {
     public bool Adblock { get; set; } = true;
+    public List<string> PendingProfileDeletes { get; set; } = new(); // 削除したアカウント用プロファイル（次回起動時に、データのフォルダを消す）
     public bool PasswordSave { get; set; } = true; // パスワードの保存・フォームの自動入力（この PC の中だけ）
     public bool HttpsUpgrade { get; set; } = true;
     public bool StripTracking { get; set; } = true;

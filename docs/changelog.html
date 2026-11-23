@@ -39,12 +39,19 @@
 <div class="page-hero"><div class="wrap">
   <span class="eyebrow">CHANGELOG</span>
   <h1>更新履歴</h1>
-  <p>最新版は v1.4.0 です。新しい版は<a href="download.html">ダウンロードのページ</a>から入手できます。</p>
+  <p>最新版は v1.4.1 です。新しい版は<a href="download.html">ダウンロードのページ</a>から入手できます。</p>
 </div></div>
 
 <div class="wrap doc">
   <div class="narrow changelog">
-    <section class="block" id="v1-4-0"><h2>v1.4.0 <span class="note">2026-11-23</span></h2>
+    <section class="block" id="v1-4-1"><h2>v1.4.1 <span class="note">2026-11-23</span></h2>
+<ul>
+<li><strong>初めて起動したときに、「他のブラウザから取り込む」画面が自動で開く</strong>ようになりました。「Hizashi へようこそ」の案内つきで、このパソコンにある Chrome・Edge・Vivaldi・Firefox などのプロファイルが一覧に出ます。いらなければ ✕ で閉じるだけです（あとから設定でいつでも開けます）。 以前から使っている人（設定ファイルがすでにある）には出ません。ポータブルモードに切り替えたときにも出ません。</li>
+<li>開発・テスト用: 保存先を <code>HIZASHI_DATA_DIR</code> で変えているときは、その保存先ごとに別のインスタンスとして動くようにしました（普段使っている Hizashi が動いていても、テスト用の起動が転送されて終わらないように）。</li>
+<li>自動テストを増やしました（初回起動の判定と画面）。</li>
+</ul>
+</section>
+<section class="block" id="v1-4-0"><h2>v1.4.0 <span class="note">2026-11-23</span></h2>
 <ul>
 <li><strong>ポータブルモード</strong>: データ（設定・ブックマーク・履歴・メモ・ログイン状態・拡張機能など）を、exe と同じフォルダの <code>Hizashi-data</code> に保存できるようになりました。 exe と <code>Hizashi-data</code> フォルダを USB メモリなどにまとめて入れれば、どのパソコンでも、同じ設定・ログイン状態で使えます。 - 設定パネルの「データの保存場所」→「ポータブルにする」で切り替えます（いまのデータを、再起動後にコピーします。元のデータは消しません）。手動なら、exe と同じフォルダに <code>Hizashi.portable</code> というファイルを置くだけです。 - 設定パネルとパレットの「データのフォルダを開く」で、保存先を開けます。 - エラーログも、ポータブルモードでは <code>Hizashi-data</code> に書きます。</li>
 <li>自動テストを増やしました（ポータブルモードの判定・コピー）。</li>

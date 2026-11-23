@@ -4,7 +4,13 @@ namespace Hizashi;
 
 static class Program
 {
-    internal const string PipeName = "Hizashi.WV2.Pipe";
+    // 開発・テスト用に HIZASHI_DATA_DIR で保存先を変えているときは、その保存先ごとに別のインスタンスとして扱う
+    // （普段使っている Hizashi が動いていても、テスト用の起動が、そちらへ転送されて終わらないように）
+    static readonly string InstanceSuffix = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HIZASHI_DATA_DIR"))
+        ? ""
+        : "." + Convert.ToHexString(System.Security.Cryptography.SHA1.HashData(System.Text.Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("HIZASHI_DATA_DIR").ToLowerInvariant())))[..8];
+
+    internal static readonly string PipeName = "Hizashi.WV2.Pipe" + InstanceSuffix;
 
     // ポータブルモードのとき、データのルート（ログもここに書く）。通常は null
     internal static string DataRoot;
@@ -33,7 +39,7 @@ static class Program
         Updater.CleanupOld();
 
         // 多重起動の防止（2つ目はURLを渡して終了する）
-        using var mutex = new Mutex(true, "Hizashi.WV2.SingleInstance", out var first);
+        using var mutex = new Mutex(true, "Hizashi.WV2.SingleInstance" + InstanceSuffix, out var first);
         if (!first && !selfTest)
         {
             SendToRunning(args.FirstOrDefault(a => a.StartsWith("http://") || a.StartsWith("https://")) ?? "");

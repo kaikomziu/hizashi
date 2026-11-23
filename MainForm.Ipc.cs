@@ -127,6 +127,12 @@ public partial class MainForm
             case "k:ui-ready":
                 uiReady = true;
                 if (tabs.Count == 0) RestoreOrOpenFirst();
+                if (firstRun)
+                {
+                    firstRun = false;
+                    settingsStore.Save(); // 設定ファイルを作って、次回からは「初めて」にならないようにする
+                    _ = ShowFirstRunWelcomeAsync();
+                }
                 ApplyOpacityAndTop();
                 ScheduleState();
                 break;

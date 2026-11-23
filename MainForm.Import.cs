@@ -5,6 +5,8 @@ partial class MainForm
 {
     string importReport = "";
     bool importBusy;
+    bool firstRun;
+    bool importWelcome;   // 初回起動で開いたときだけ、「はじめに」の案内を出す
     const int HistoryMax = 5000;
 
     // テスト用: 他のブラウザのデータの場所を差し替える
@@ -23,7 +25,21 @@ partial class MainForm
         }).ToList(),
         report = importReport,
         busy = importBusy,
+        welcome = importWelcome,
     };
+
+    // 初めての起動か（設定ファイルが無い）。セルフテストは、いつものテストの邪魔をしないよう対象外
+    internal static bool IsFirstRun(string settingsPath, bool selfTest) => !selfTest && !File.Exists(settingsPath);
+
+    // 初回起動のとき、引き継ぎ（取り込み）の画面を開く。いらなければ閉じるだけ。あとから設定でも開ける
+    internal async Task ShowFirstRunWelcomeAsync()
+    {
+        for (int i = 0; i < 50 && !overlayReady; i++) await Task.Delay(100);
+        await Task.Delay(500);
+        importWelcome = true;
+        if (overlayMode == "panel" && panelName == "import") RefreshPanel("import");
+        else OpenPanel("import");
+    }
 
     // ブックマーク・履歴を、いまのデータに足す。足した件数を文章にして返す
     string ApplyImport(List<Bookmark> bms, List<HistoryItem> hist, string from)

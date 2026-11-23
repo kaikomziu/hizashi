@@ -687,6 +687,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         await TestAccounts(bs);
         await TestImport();
         TestPortable();
+        await TestFirstRun();
 
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
@@ -1457,6 +1458,32 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         var panel = JsonSerializer.Serialize(PanelData("settings", ""), Util.Json);
         Check("設定パネルに、データの保存場所と、ポータブルかどうかが渡る", panel.Contains("\"dataPath\"") && panel.Contains("\"portable\":false"));
         Check("「ポータブルモードにする」「データのフォルダを開く」のコマンドがある", commands.Any(c => c.Id == "app.portable") && commands.Any(c => c.Id == "app.openData"));
+    }
+
+    // ---------------------------------------------------------------- 初回起動の引き継ぎ画面
+    async Task TestFirstRun()
+    {
+        var dir = Path.Combine(testOut, "firstrun");
+        try { Directory.Delete(dir, true); } catch { }
+        Directory.CreateDirectory(dir);
+        var f = Path.Combine(dir, "settings.json");
+        Check("設定ファイルが無ければ、初めての起動と判定する", MainForm.IsFirstRun(f, false));
+        File.WriteAllText(f, "{}");
+        Check("設定ファイルがあれば、初めてではない（既存のユーザーには出さない）", !MainForm.IsFirstRun(f, false));
+        Check("セルフテストは、初回の画面を出さない（ほかのテストの邪魔をしない）", !MainForm.IsFirstRun(Path.Combine(dir, "none.json"), true));
+
+        await ShowFirstRunWelcomeAsync();
+        await Sleep(1200);
+        var text = await UiJs(overlayView, "document.body.innerText");
+        Check("初回起動の画面は、引き継ぎパネルが開き、「はじめに」の案内が出る", overlayMode == "panel" && panelName == "import" && text.Contains("Hizashi へようこそ") && text.Contains("このパソコンのブラウザから"), $"mode={overlayMode} panel={panelName}");
+        await Shot(overlayView.CoreWebView2, "20-first-run-import");
+        HideOverlay(false);
+        Check("閉じると、案内は次から出ない", !importWelcome);
+        OpenPanel("import");
+        await Sleep(1000);
+        var text2 = await UiJs(overlayView, "document.body.innerText");
+        Check("設定などから開き直したときは、「はじめに」の案内は出ない", !text2.Contains("Hizashi へようこそ") && text2.Contains("このパソコンのブラウザから"));
+        HideOverlay(false);
     }
 
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット

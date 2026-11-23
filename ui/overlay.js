@@ -527,6 +527,12 @@ function renderSettings(cfg, fresh) {
 function renderImport(d, fresh) {
   if (fresh) {
     const wrap = h('div', 'p-scroll');
+    if (d.welcome) {
+      const w = h('div', 'imp-welcome');
+      w.appendChild(h('b', '', 'Hizashi へようこそ！'));
+      w.appendChild(h('div', '', 'いま使っているブラウザ（Chrome・Edge・Vivaldi・Firefox など）から、ブックマークと履歴を引っ越せます。いらなければ、右上の ✕ で閉じてください。あとから、設定の「他のブラウザから取り込む」でいつでも開けます。'));
+      wrap.appendChild(w);
+    }
     wrap.appendChild(sec('このパソコンのブラウザから'));
     wrap.appendChild(h('div', 'hint', 'ブックマークと履歴を、Hizashi に取り込みます（いまのデータは消さず、足します）。元のブラウザのデータは、読むだけで書き換えません。'));
     wrap.appendChild(h('div', 'imp-list'));

@@ -134,6 +134,8 @@ public partial class MainForm : Form
         Directory.CreateDirectory(uiRoot);
         uiDir = EnsureUiExtracted();
         MigrateOldData();
+        // 設定ファイルがまだ無い = 初めての起動（旧データの引き継ぎやポータブルへのコピーがあったときは、すでにある）
+        firstRun = IsFirstRun(Path.Combine(dataDir, "settings.json"), SelfTest);
         settingsStore = new Store<Settings>(Path.Combine(dataDir, "settings.json"), () => new Settings());
         sitesStore = new Store<SiteData>(Path.Combine(dataDir, "sites.json"), () => new SiteData());
         bookmarksStore = new Store<List<Bookmark>>(Path.Combine(dataDir, "bookmarks.json"), () => new List<Bookmark>
@@ -584,6 +586,7 @@ public partial class MainForm : Form
     internal void HideOverlay(bool refocus = true)
     {
         if (overlayMode == null) return;
+        if (overlayMode == "panel" && panelName == "import") importWelcome = false;
         overlayMode = null;
         overlayView.Visible = false;
         overlayView.Region = null;

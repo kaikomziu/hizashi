@@ -14,6 +14,7 @@
       <li><a href="#recipes">使い方のレシピ</a></li>
       <li><a href="#data">データの保存場所</a></li>
       <li><a href="#backup">データのバックアップと移行</a></li>
+      <li><a href="#portable">ポータブルモード（USB メモリで持ち運ぶ）</a></li>
       <li><a href="#default">既定のブラウザについて</a></li>
       <li><a href="#trouble">困ったとき</a></li>
     </ol>
@@ -124,6 +125,16 @@
       <li>新しいパソコンで Hizashi を一度起動して終了し、コピーしたファイルを同じ場所に上書きします。</li>
     </ol>
     <p>ログイン状態（Cookie）は <code>%LOCALAPPDATA%\Hizashi\WebView2</code> にあります。移すこともできますが、サイトによってはログインし直しが必要になります。</p>
+
+    <h2 id="portable">ポータブルモード（USB メモリで持ち運ぶ）</h2>
+    <p>データを、exe と同じフォルダの <code>Hizashi-data</code> に保存するモードです（v1.4.0 以降）。<code>Hizashi.exe</code> と <code>Hizashi-data</code> フォルダを USB メモリなどにまとめて入れれば、どのパソコンでも、同じ設定・ブックマーク・履歴・ログイン状態で使えます。</p>
+    <ol>
+      <li>設定パネルの「データの保存場所」にある<strong>「ポータブルにする」</strong>を押します（exe のあるフォルダに書き込める必要があります）。</li>
+      <li>確認のあと、自動で再起動します。いまのデータは、再起動後にコピーされます（元のデータは消えません）。</li>
+      <li>以降、データは exe のフォルダの <code>Hizashi-data</code> に保存されます。設定パネルの「フォルダを開く」で開けます。</li>
+    </ol>
+    <p>手動で切り替えるときは、exe と同じフォルダに <code>Hizashi.portable</code> という名前のファイル（中身は空でかまいません）を置いて、起動します。やめるときは、このファイルと <code>Hizashi-data</code> フォルダを削除します（元の保存場所のデータは、そのまま残っています）。</p>
+    <p class="note">注意：ポータブルモードの <code>Hizashi-data</code> には、ログイン状態（Cookie）やパスワードの保存データも入ります。USB メモリを紛失すると、それらも一緒に渡ってしまうので、取り扱いに気をつけてください（Hizashi はデータを暗号化していません）。更新ボタンで更新しても、<code>Hizashi-data</code> はそのまま使われます。</p>
 
     <h2 id="default">既定のブラウザについて</h2>
     <p>Hizashi を Windows の「既定のブラウザ」に設定する機能は、まだありません。ほかのアプリのリンクから Hizashi で開くことはできません。URL を引数にして起動すると、そのページが開きます（<code>Hizashi.exe https://example.com</code>）。</p>

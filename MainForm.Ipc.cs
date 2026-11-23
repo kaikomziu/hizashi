@@ -89,6 +89,8 @@ public partial class MainForm
                 {
                     adblock = S.Adblock,
                     passwordSave = S.PasswordSave,
+                    dataPath = dataDir,
+                    portable = IsPortable,
                     httpsUpgrade = S.HttpsUpgrade,
                     stripTracking = S.StripTracking,
                     restoreSession = S.RestoreSession,

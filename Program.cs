@@ -6,6 +6,9 @@ static class Program
 {
     internal const string PipeName = "Hizashi.WV2.Pipe";
 
+    // ポータブルモードのとき、データのルート（ログもここに書く）。通常は null
+    internal static string DataRoot;
+
     [STAThread]
     static void Main(string[] args)
     {
@@ -44,7 +47,7 @@ static class Program
     {
         try
         {
-            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Hizashi");
+            var dir = DataRoot ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Hizashi");
             Directory.CreateDirectory(dir);
             File.AppendAllText(Path.Combine(dir, "error.log"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {where}: {e}\n\n");
         }

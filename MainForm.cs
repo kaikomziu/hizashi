@@ -79,6 +79,16 @@ public partial class MainForm : Form
             wvDir = Path.Combine(root, "webview2");
             uiRoot = Path.Combine(root, "ui");
         }
+        else if (Portable.Root(Path.GetDirectoryName(Environment.ProcessPath) ?? appDir) is { } pr)
+        {
+            // ポータブルモード: データは、exe と同じフォルダの Hizashi-data に置く
+            Portable.ApplyMigration(pr);
+            IsPortable = true;
+            Program.DataRoot = pr;
+            dataDir = Path.Combine(pr, "data");
+            wvDir = Path.Combine(pr, "webview2");
+            uiRoot = Path.Combine(pr, "ui");
+        }
         else
         {
             var local = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Hizashi");
@@ -200,7 +210,7 @@ public partial class MainForm : Form
     // 開発中の旧名称（Komorebi）のデータを、初回だけ引き継ぐ（作者の環境向け。無ければ何もしない）
     void MigrateOldData()
     {
-        if (SelfTest) return;
+        if (SelfTest || IsPortable) return;
         try
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

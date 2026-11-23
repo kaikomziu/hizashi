@@ -148,6 +148,8 @@ public partial class MainForm
             RefreshPanel("history");
             Toast("履歴を削除しました");
         }));
+        Cmd("app.portable", "ポータブルモードにする（データを exe のフォルダに保存）", "", () => Fire(EnablePortableAsync));
+        Cmd("app.openData", "データのフォルダを開く", "", OpenDataFolder);
         Cmd("app.shortcut", "デスクトップとスタートメニューにショートカットを作る", "", () => CreateShortcuts());
         Cmd("panel.extensions", "拡張機能を管理", "", () => OpenPanel("extensions"));
         Cmd("panel.import", "他のブラウザのデータ（ブックマーク・履歴）を取り込む", "", () => OpenPanel("import"));

@@ -456,6 +456,18 @@ function renderSettings(cfg, fresh) {
   imp.addEventListener('click', () => { K.send('k:panel-set', 'import'); openPanel('import'); });
   wrap.appendChild(row('Chrome・Edge・Vivaldi・Firefox などから', 'ブックマークと履歴を取り込みます（パスワードやログイン状態は取り込めません）', imp));
 
+  wrap.appendChild(sec('データの保存場所'));
+  const dp = h('div'); dp.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end';
+  const open = h('button', 'pbtn', 'フォルダを開く');
+  open.addEventListener('click', () => { K.send('k:cmd', 'app.openData'); });
+  dp.appendChild(open);
+  if (!cfg.portable) {
+    const pb = h('button', 'pbtn primary', 'ポータブルにする');
+    pb.addEventListener('click', () => { K.send('k:ov-close'); setTimeout(() => K.send('k:cmd', 'app.portable'), 30); });
+    dp.appendChild(pb);
+  }
+  wrap.appendChild(row(cfg.portable ? 'ポータブルモード（exe のフォルダに保存）' : '設定・ブックマークなどの保存先', (cfg.dataPath || '') + (cfg.portable ? '' : '\n「ポータブルにする」と、exe と同じフォルダの Hizashi-data に保存します（USB メモリなどに入れて持ち運べます）'), dp));
+
   wrap.appendChild(sec('アップデート'));
   const upd = h('button', 'pbtn primary', '更新を確認');
   upd.addEventListener('click', () => { K.send('k:ov-close'); setTimeout(() => K.send('k:cmd', 'app.update'), 30); });

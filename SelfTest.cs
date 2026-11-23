@@ -686,6 +686,7 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         await TestPasswordsAndClear(bs);
         await TestAccounts(bs);
         await TestImport();
+        TestPortable();
 
         try { server.Stop(); } catch { }
         try { if (!string.IsNullOrEmpty(prevClip)) Clipboard.SetText(prevClip); } catch { }
@@ -1397,6 +1398,65 @@ footer{text-align:center;color:#a39e8f;font-size:13px;padding:30px}
         // このパソコンに入っているブラウザの検出（結果は参考表示。ファイルは読まない）
         var real = BrowserImport.Detect(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
         testLog.WriteLine("  [info] このPCで検出した他のブラウザ: " + (real.Count == 0 ? "なし" : string.Join(", ", real.Select(x => $"{x.Browser}({x.Profile}):ブックマーク{x.BookmarkCount}件").Distinct())));
+    }
+
+
+    // ---------------------------------------------------------------- ポータブルモード（データを exe のフォルダに保存）
+    void TestPortable()
+    {
+        var root = Path.Combine(testOut, "portable");
+        try { Directory.Delete(root, true); } catch { }
+        var exeDir = Path.Combine(root, "app");
+        Directory.CreateDirectory(exeDir);
+        var marker = Path.Combine(exeDir, Portable.MarkerName);
+
+        Check("マーカーも Hizashi-data も無ければ、通常モード", Portable.Root(exeDir) == null);
+        File.WriteAllText(marker, "");
+        Check("Hizashi.portable があれば、ポータブルモード（データの場所は exe のフォルダの Hizashi-data）", Portable.Root(exeDir) == Path.Combine(exeDir, "Hizashi-data"));
+        File.Delete(marker);
+        Directory.CreateDirectory(Path.Combine(exeDir, "Hizashi-data"));
+        Check("Hizashi-data フォルダがあるだけでも、ポータブルモード（フォルダごと持ち運んだ場合）", Portable.Root(exeDir) != null);
+        Check("書き込めるフォルダは、ポータブルにできると判定する", Portable.CanWrite(exeDir));
+        var notDir = Path.Combine(root, "not-a-folder.txt");
+        File.WriteAllText(notDir, "x");
+        Check("書き込めない場所（フォルダを作れない場所）は、できないと判定する", !Portable.CanWrite(Path.Combine(notDir, "sub")));
+
+        // 切り替え時のデータのコピー
+        var oldData = Path.Combine(root, "old", "data");
+        var oldWv = Path.Combine(root, "old", "webview2");
+        Directory.CreateDirectory(Path.Combine(oldData, "extensions", "abc"));
+        File.WriteAllText(Path.Combine(oldData, "settings.json"), "{\"adblock\":false}");
+        File.WriteAllText(Path.Combine(oldData, "bookmarks.json"), "[1]");
+        File.WriteAllText(Path.Combine(oldData, "extensions", "abc", "manifest.json"), "{}");
+        Directory.CreateDirectory(Path.Combine(oldWv, "EBWebView", "Default", "Cache"));
+        Directory.CreateDirectory(Path.Combine(oldWv, "EBWebView", "WV2Profile_acct-x"));
+        File.WriteAllText(Path.Combine(oldWv, "EBWebView", "Default", "Cookies"), "COOKIES");
+        File.WriteAllText(Path.Combine(oldWv, "EBWebView", "Default", "Cache", "junk"), "JUNK");
+        File.WriteAllText(Path.Combine(oldWv, "EBWebView", "WV2Profile_acct-x", "Cookies"), "ACCT-COOKIES");
+
+        var exe2 = Path.Combine(root, "app2");
+        Portable.Enable(exe2, oldData, oldWv);
+        Check("「ポータブルにする」で、マーカーとコピーの指示が作られる", File.Exists(Path.Combine(exe2, Portable.MarkerName)) && File.Exists(Path.Combine(exe2, "Hizashi-data", "migrate.json")));
+        var pr = Portable.Root(exe2);
+        Check("コピー前から、ポータブルモードと判定される", pr != null);
+        Check("次回起動時に、いまのデータがコピーされる", Portable.ApplyMigration(pr) && File.ReadAllText(Path.Combine(pr, "data", "settings.json")) == "{\"adblock\":false}"
+            && File.Exists(Path.Combine(pr, "data", "extensions", "abc", "manifest.json")) && File.ReadAllText(Path.Combine(pr, "data", "bookmarks.json")) == "[1]");
+        Check("ログイン情報（Cookie）と、アカウント用プロファイルもコピーされる",
+            File.ReadAllText(Path.Combine(pr, "webview2", "EBWebView", "Default", "Cookies")) == "COOKIES" && File.ReadAllText(Path.Combine(pr, "webview2", "EBWebView", "WV2Profile_acct-x", "Cookies")) == "ACCT-COOKIES");
+        Check("大きなキャッシュは持ち越さない", !Directory.Exists(Path.Combine(pr, "webview2", "EBWebView", "Default", "Cache")));
+        Check("元のデータは消さない", File.Exists(Path.Combine(oldData, "settings.json")) && File.Exists(Path.Combine(oldWv, "EBWebView", "Default", "Cookies")));
+        Check("コピーの指示は、実行後に消える（2回目は何もしない）", !File.Exists(Path.Combine(pr, "migrate.json")) && !Portable.ApplyMigration(pr));
+
+        // すでにあるファイルは上書きしない
+        File.WriteAllText(Path.Combine(pr, "data", "settings.json"), "{\"adblock\":true,\"edited\":1}");
+        Portable.Enable(exe2, oldData, oldWv);
+        Portable.ApplyMigration(pr);
+        Check("ポータブル側で変更済みの設定は、コピーで上書きしない", File.ReadAllText(Path.Combine(pr, "data", "settings.json")).Contains("edited"));
+
+        Check("通常のセルフテスト中は、ポータブルモードではない", !IsPortable);
+        var panel = JsonSerializer.Serialize(PanelData("settings", ""), Util.Json);
+        Check("設定パネルに、データの保存場所と、ポータブルかどうかが渡る", panel.Contains("\"dataPath\"") && panel.Contains("\"portable\":false"));
+        Check("「ポータブルモードにする」「データのフォルダを開く」のコマンドがある", commands.Any(c => c.Id == "app.portable") && commands.Any(c => c.Id == "app.openData"));
     }
 
     // ---------------------------------------------------------------- README・紹介ページ用のスクリーンショット
